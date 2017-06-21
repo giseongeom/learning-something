@@ -1,0 +1,6 @@
+---
+- hosts: all
+  tasks:
+    - name: create hello.txt at /tmp
+      file: path=/tmp/hello.txt state=touch mode="u=rw,g=r,o=r"
+
