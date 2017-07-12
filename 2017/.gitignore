@@ -64,3 +64,9 @@ terraform.tfvars
 
 bin/
 obj/
+
+# Visual Ccode
+*.vscode/
+*.vsbuild/
+*.dSYM/
+
