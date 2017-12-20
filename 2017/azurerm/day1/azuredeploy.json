@@ -39,7 +39,16 @@
       "kind": "Storage",
       "location": "[resourceGroup().location]",
       "tags": {},
-      "properties": {}
+      "properties": {
+        "encryption":{
+          "services":{
+            "blob":{
+              "enabled":true
+            }
+          },
+          "keySource":"Microsoft.Storage"
+        }
+      }
     }
   ],
   "outputs": {  }
