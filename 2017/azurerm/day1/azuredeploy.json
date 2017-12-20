@@ -51,5 +51,14 @@
       }
     }
   ],
-  "outputs": {  }
+  "outputs": { 
+    "groupLocation": {
+      "type": "string",
+      "value": "[resourceGroup().location]"
+    },
+    "storageUri": {
+      "type": "string",
+      "value": "[reference(concat('Microsoft.Storage/storageAccounts/',variables('storageName'))).primaryEndpoints.blob]"
+    }
+  }
 }
