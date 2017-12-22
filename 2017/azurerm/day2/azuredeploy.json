@@ -1,0 +1,104 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+       "vnetName" : {
+         "type": "string",
+         "defaultValue": "opsvNet",
+         "metadata": {
+           "description": "Name for the new VNet"
+         }
+       },
+       "gatewaySubnetName": {
+         "type": "string",
+         "defaultValue": "GatewaySubnet",
+         "metadata": {
+           "description": "Name for gateway subnet in new VNet"
+         },
+         "allowedValues": [
+           "GatewaySubnet"
+         ]
+       },
+       "subnet1Name": {
+         "type": "string",
+         "defaultValue": "subnet-1-default",
+         "metadata": {
+           "description": "Name for VM Default subnet in the new VNet"
+         }
+       },
+       "subnet2Name": {
+         "type": "string",
+         "defaultValue": "subnet-2",
+         "metadata": {
+           "description": "Name for VM 2nd subnet in the new VNet"
+         }
+       },
+       "vnetPrefix": {
+         "type": "string",
+         "defaultValue": "172.22.0.0/20",
+         "metadata": {
+           "description": "CIDR block for VNet"
+         }
+       },
+       "gatewaySubnetPrefix": {
+         "type": "string",
+         "defaultValue": "172.22.0.0/24",
+         "metadata": {
+           "description": "CIDR block for gateway subnet"
+         }
+       },
+      "subnet1Prefix": {
+         "type": "string",
+         "metadata": {
+         "defaultValue": "172.22.1.0/24",
+           "description": "CIDR block for VM subnet-1"
+         }
+       },
+      "subnet2Prefix": {
+         "type": "string",
+         "metadata": {
+         "defaultValue": "172.22.2.0/24",
+           "description": "CIDR block for VM subnet-2"
+         }
+       }
+  },
+  "variables": {
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[parameters('vnetName')]",
+      "apiVersion": "2017-06-01",
+      "location": "[resourceGroup().location]",
+      "comments": "Build a Virtual Network with /20 address space",
+      "properties": {
+          "addressSpace": {
+              "addressPrefixes": [
+                  "[parameters('vnetPrefix')]"
+              ]
+          },
+          "subnets": [
+              {
+                  "name": "[parameters('gatewaySubnetName')]",
+                  "properties": {
+                      "addressPrefix": "[parameters('gatewaySubnetPrefix')]"
+                  }
+              },
+              {
+                  "name": "[parameters('subnet1Name')]",
+                  "properties": {
+                      "addressPrefix": "[parameters('subnet1Prefix')]"
+                  }
+              },
+              {
+                  "name": "[parameters('subnet2Name')]",
+                  "properties": {
+                      "addressPrefix": "[parameters('subnet2Prefix')]"
+                  }
+              }
+          ]
+      }
+    } 
+  ],
+ "outputs": { }
+}
