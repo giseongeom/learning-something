@@ -1,0 +1,24 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnetPrefix": {
+            "value": "10.10.0.0/16"
+        },
+        "gatewaySubnetPrefix": {
+            "value": "10.10.0.0/24"
+        },
+        "subnet1Prefix": {
+            "value": "10.10.1.0/24"
+        },
+        "subnet2Prefix": {
+            "value": "10.10.2.0/24"
+        },
+        "sshKeyData": {
+            "value": "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAxVq6IpjC8XaQ+utFbhtwgnp1Ig12RDRII+QjvfWgpkW2rcwe7CHVTCcf9PgZlnmMLVWsv1ha61MUopGN/bhWjcBE2fqhYJ3EU0UkeKRb6mviZYq5r5qnUmcT2KkzmU7xgQQdL4UoId1NB9pN7PEmLtyFuqH3HANGbgHW5l4vi5hx6XsUOBbNXp5/Qd2+FAJlr7RGY2BT5urqF0s94o984R8EM+HhOHb9E3qnf3jkthkTQC73vHS28aiSjKVDJFsTxQywS1mhzXvrQzyM7+B7PyuDJ2vpX4k4k0ubbgXQI6l3pkERREwiTzLg+QX0/CexshDrCba/RJGkLxHwYkra1Q== jurist@kldp.org"
+        },
+        "adminUsername": {
+            "value": "jurist"
+        }
+    }
+}
