@@ -20,7 +20,7 @@ function MyAzureVM-MaintenanceCheck
             $vmDetails = Get-AzureRMVM -ResourceGroupName $rg.ResourceGroupName -Name $vm.Name -Status
               if ($vmDetails.MaintenanceRedeployStatus)
               {
-                Write-Output "VM: $($vmDetails.ResourceGroupName) / $($vmDetails.Name)  IsSelfPmAllowed: $($vmDetails.MaintenanceRedeployStatus.IsCustomerInitiatedMaintenanceAllowed)  SelfPmStart: $($vmDetails.MaintenanceRedeployStatus.PreMaintenanceWindowStartTime)  LastOpCode: $($vmDetails.MaintenanceRedeployStatus.LastOperationResultCode)"
+                Write-Output "$($vmDetails.ResourceGroupName) / $($vmDetails.Name) / IsSelfPmAllowed: $($vmDetails.MaintenanceRedeployStatus.IsCustomerInitiatedMaintenanceAllowed) / SelfPmStart: $($vmDetails.MaintenanceRedeployStatus.PreMaintenanceWindowStartTime) / AzurePmStart: $($vmDetails.MaintenanceRedeployStatus.MaintenanceWindowStartTime) / LastOpCode: $($vmDetails.MaintenanceRedeployStatus.LastOperationResultCode)"
               }
          }
     }

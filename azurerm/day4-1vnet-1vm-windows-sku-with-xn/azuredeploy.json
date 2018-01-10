@@ -10,6 +10,10 @@
       "type": "string",
       "defaultValue": "Standard_DS4_v2"
     },
+    "enabledXN": {
+      "type": "bool",
+      "defaultValue": false
+    },
     "adminUsername": {
       "type": "string"
     },
@@ -50,7 +54,7 @@
     "imageSku": "[parameters('windowsOSVersion')]",
     "nsg1Name": "AllowRDP",
     "officeIPCidr": "210.216.0.0/16",
-    "homeIPCidr": "192.168.1.0/24",
+    "homeIPCidr": "1.228.0.0/16",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('vnetName'))]",
     "subnet1Ref": "[concat(variables('vnetID'),'/subnets/',variables('subnet1Name'))]"
   },
@@ -76,7 +80,7 @@
         "[concat('Microsoft.Network/networkSecurityGroups/', variables('nsg1Name'))]"
       ],
       "properties": {
-        "enableAcceleratedNetworking": true,
+        "enableAcceleratedNetworking": "[parameters('enabledXN')]",
         "networkSecurityGroup": {
           "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg1Name'))]"
         },
