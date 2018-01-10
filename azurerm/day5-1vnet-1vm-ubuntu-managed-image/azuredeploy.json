@@ -67,7 +67,11 @@
     },
     "vmSize": {
       "type": "string",
-      "defaultValue": "Standard_DS2_v2"
+      "defaultValue": "Standard_DS4_v2"
+    },
+    "enabledXN": {
+      "type": "bool",
+      "defaultValue": false
     },
     "sshKeyData": {
       "type": "string",
@@ -131,6 +135,7 @@
         "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
       ],
       "properties": {
+        "enableAcceleratedNetworking": "[parameters('enabledXN')]",
         "ipConfigurations": [
           {
             "name": "ipconfig1",
@@ -248,10 +253,7 @@
         },
         "storageProfile": {
           "imageReference": {
-            "publisher": "[variables('imagePublisher')]",
-            "offer": "[variables('imageOffer')]",
-            "sku": "[parameters('ubuntuOSVersion')]",
-            "version": "latest"
+            "id": "[parameters('osImageId')]"
           },
           "osDisk": {
             "createOption": "FromImage",
@@ -273,5 +275,10 @@
       }
     }
   ],
-  "outputs": {}
+  "outputs": {
+    "vmPublicIP": {
+      "type": "string",
+      "value": "[reference(concat('Microsoft.Network/publicIPAddresses/', parameters('publicIPAddressName'))).ipAddress]"
+    }
+  }
 }
