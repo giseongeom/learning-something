@@ -92,7 +92,7 @@
     },
     "publicIPAddressType": {
       "type": "string",
-      "defaultValue": "Dynamic"
+      "defaultValue": "Static"
     },
     "publicIPAddressName": {
       "type": "string",
@@ -126,7 +126,7 @@
       }
     },
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[parameters('nicName')]",
       "location": "[variables('location')]",
@@ -225,11 +225,12 @@
       }
     },
     {
-      "apiVersion": "2017-03-30",
+      "apiVersion": "2017-12-01",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[parameters('vmName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', parameters('publicIPAddressName'))]",
         "[resourceId('Microsoft.Network/networkInterfaces/', parameters('nicName'))]"
       ],
       "properties": {
