@@ -45,7 +45,7 @@
     "gatewaySubnetPrefix": "172.16.0.0/24",
     "subnet1Prefix": "172.16.1.0/24",
     "subnet2Prefix": "172.16.2.0/24",
-    "publicIPAddressType": "Dynamic",
+    "publicIPAddressType": "Static",
     "publicIPAddressName": "[concat('pip', '-', parameters('vmName'), '-', take(uniqueString(parameters('vmName')), 4))]",
     "nicName": "[concat('nic', '-', parameters('vmName'), '-', take(uniqueString(parameters('vmName')), 4))]",
     "location": "[resourceGroup().location]",
@@ -55,6 +55,7 @@
     "nsg1Name": "AllowRDP",
     "officeIPCidr": "210.216.0.0/16",
     "homeIPCidr": "1.228.0.0/16",
+    "labIPCidr": "52.231.0.0/16",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('vnetName'))]",
     "subnet1Ref": "[concat(variables('vnetID'),'/subnets/',variables('subnet1Name'))]"
   },
@@ -156,6 +157,20 @@
             }
           },
           {
+            "name": "rule_allow_winrm_from_office",
+            "properties": {
+              "description": "Locks inbound down to winrm default port 5985 from office",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "5985",
+              "sourceAddressPrefix": "[variables('officeIPCidr')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 102,
+              "direction": "Inbound"
+            }
+          },
+          {
             "name": "rule_allow_ssh_from_home",
             "properties": {
               "description": "Locks inbound down to rdp default port 3389 from home",
@@ -165,10 +180,53 @@
               "sourceAddressPrefix": "[variables('homeIPCidr')]",
               "destinationAddressPrefix": "*",
               "access": "Allow",
-              "priority": 102,
+              "priority": 103,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "rule_allow_winrm_from_home",
+            "properties": {
+              "description": "Locks inbound down to rdp default port 5985 from home",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "5985",
+              "sourceAddressPrefix": "[variables('homeIPCidr')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 104,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "rule_allow_ssh_from_lab",
+            "properties": {
+              "description": "Locks inbound down to rdp default port 3389 from lab",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3389",
+              "sourceAddressPrefix": "[variables('labIPCidr')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 105,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "rule_allow_winrm_from_lab",
+            "properties": {
+              "description": "Locks inbound down to rdp default port 5985 from lab",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "5985",
+              "sourceAddressPrefix": "[variables('labIPCidr')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 106,
               "direction": "Inbound"
             }
           }
+ 
         ]
       }
     },
@@ -216,5 +274,10 @@
       }
     }
   ],
-  "outputs": {}
+  "outputs": {
+    "vmPublicIP": {
+      "type": "string",
+      "value": "[reference(concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))).ipAddress]"
+    }
+  }
 }
