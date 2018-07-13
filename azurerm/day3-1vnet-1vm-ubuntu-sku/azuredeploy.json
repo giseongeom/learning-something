@@ -88,7 +88,7 @@
     },
     "publicIPAddressType": {
       "type": "string",
-      "defaultValue": "Dynamic"
+      "defaultValue": "Static"
     },
     "publicIPAddressName": {
       "type": "string",
@@ -280,5 +280,10 @@
       }
     }
   ],
-  "outputs": {}
+  "outputs": {
+    "vmPublicIP": {
+      "type": "string",
+      "value": "[reference(concat('Microsoft.Network/publicIPAddresses/', parameters('publicIPAddressName'))).ipAddress]"
+    }
+  }
 }
