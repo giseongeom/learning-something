@@ -1,0 +1,13 @@
+{
+  "amsBackendIPAddresses": {
+    "value": [
+      "172.23.1.4",
+      "172.23.1.5"
+    ]
+  },
+  "amsAdminBackendIPAddresses": {
+    "value": [
+      "172.23.2.4"
+    ]
+  }
+}

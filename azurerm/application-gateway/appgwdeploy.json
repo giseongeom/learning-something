@@ -1,0 +1,578 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "publicIPAllocationMethod": {
+      "type": "string",
+      "allowedValues": [
+        "Static",
+        "Dynamic"
+      ],
+      "defaultValue": "Dynamic"
+    },
+    "virtualNetworkName": {
+      "type": "string"
+    },
+    "amsAppGatewayName": {
+      "type": "string"
+    },
+    "amsPublicIPAddressName": {
+      "type": "string"
+    },
+    "amsAppgwSubnetName": {
+      "type": "string"
+    },
+    "amsAppgwProbeEnabled": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "amsProbeProtocol": {
+      "type": "string"
+    },
+    "amsProbePath": {
+      "type": "string"
+    },
+    "amsProbeHost": {
+      "type": "string"
+    },
+    "amsProbeIntervalInSeconds": {
+      "type": "int"
+    },
+    "amsProbeTimeoutInSeconds": {
+      "type": "int"
+    },
+    "amsProbeUnhealthyThreshold": {
+      "type": "int"
+    },
+    "amsAppgwSkuName": {
+      "type": "string",
+      "allowedValues": [
+        "Standard_Small",
+        "Standard_Medium",
+        "Standard_Large",
+        "WAF_Medium",
+        "WAF_Large"
+      ],
+      "defaultValue": "Standard_Medium",
+      "metadata": {
+        "description": "Sku Name"
+      }
+    },
+    "amsAppgwSkuTier": {
+      "type": "string",
+      "allowedValues": [
+        "Standard",
+        "WAF"
+      ],
+      "defaultValue": "Standard",
+      "metadata": {
+        "description": "Sku Tier"
+      }
+    },
+    "amsAppgwCapacity": {
+      "type": "int",
+      "allowedValues": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "defaultValue": 2,
+      "metadata": {
+        "description": "application gateway instance count"
+      }
+    },
+    "amsAppGatewayCertName": {
+      "type": "string"
+    },
+    "amsAppGatewayCertData": {
+      "type": "string",
+      "metadata": {
+        "description": "Base-64 encoded form of the .pfx file"
+      }
+    },
+    "amsAppGatewayCertPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for .pfx certificate"
+      }
+    },
+    "amsAppGatewayCookieBasedAffinity": {
+      "type": "string",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "defaultValue": "Disabled",
+      "metadata": {
+        "description": "cookie based affinity"
+      }
+    },
+    "amsAppGatewayFrontendPort": {
+      "type": "int",
+      "defaultValue": 80,
+      "metadata": {
+        "description": "application gateway front end port"
+      }
+    },
+    "amsAppGatewayBackendPort": {
+      "type": "int",
+      "defaultValue": 80,
+      "metadata": {
+        "description": "application gateway back end port"
+      }
+    },
+    "amsBackendIPAddresses": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "back end pool ip addresses"
+      }
+    },
+    "amsAdminAppGatewayName": {
+      "type": "string"
+    },
+    "amsAdminPublicIPAddressName": {
+      "type": "string"
+    },
+    "amsAdminAppgwSubnetName": {
+      "type": "string"
+    },
+    "amsAdminAppgwProbeEnabled": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "amsAdminProbeProtocol": {
+      "type": "string"
+    },
+    "amsAdminProbePath": {
+      "type": "string"
+    },
+    "amsAdminProbeHost": {
+      "type": "string"
+    },
+    "amsAdminProbeIntervalInSeconds": {
+      "type": "int"
+    },
+    "amsAdminProbeTimeoutInSeconds": {
+      "type": "int"
+    },
+    "amsAdminProbeUnhealthyThreshold": {
+      "type": "int"
+    },
+    "amsAdminAppgwSkuName": {
+      "type": "string",
+      "allowedValues": [
+        "Standard_Small",
+        "Standard_Medium",
+        "Standard_Large",
+        "WAF_Medium",
+        "WAF_Large"
+      ],
+      "defaultValue": "Standard_Medium",
+      "metadata": {
+        "description": "Sku Name"
+      }
+    },
+    "amsAdminAppgwSkuTier": {
+      "type": "string",
+      "allowedValues": [
+        "Standard",
+        "WAF"
+      ],
+      "defaultValue": "Standard",
+      "metadata": {
+        "description": "Sku Tier"
+      }
+    },
+    "amsAdminAppgwCapacity": {
+      "type": "int",
+      "allowedValues": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "defaultValue": 2,
+      "metadata": {
+        "description": "application gateway instance count"
+      }
+    },
+    "amsAdminAppGatewayCertName": {
+      "type": "string"
+    },
+    "amsAdminAppGatewayCertData": {
+      "type": "string",
+      "metadata": {
+        "description": "Base-64 encoded form of the .pfx file"
+      }
+    },
+    "amsAdminAppGatewayCertPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for .pfx certificate"
+      }
+    },
+    "amsAdminAppGatewayCookieBasedAffinity": {
+      "type": "string",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "defaultValue": "Disabled",
+      "metadata": {
+        "description": "cookie based affinity"
+      }
+    },
+    "amsAdminAppGatewayFrontendPort": {
+      "type": "int",
+      "defaultValue": 80,
+      "metadata": {
+        "description": "application gateway front end port"
+      }
+    },
+    "amsAdminAppGatewayBackendPort": {
+      "type": "int",
+      "defaultValue": 80,
+      "metadata": {
+        "description": "application gateway back end port"
+      }
+    },
+    "amsAdminBackendIPAddresses": {
+      "type": "array",
+      "defaultValue": []
+    }
+  },
+  "variables": {
+    "appgwBackendIPAddressList": {
+      "copy": [
+        {
+          "name": "backendIPAddress",
+          "count": "[length(parameters('amsBackendIPAddresses'))]",
+          "input": {
+            "IpAddress": "[parameters('amsBackendIPAddresses')[copyIndex('backendIPAddress')]]"
+          }
+        }
+      ]
+    },
+    "amsAdminAppgwBackendIPAddressList": {
+      "copy": [
+        {
+          "name": "backendIPAddress",
+          "count": "[length(parameters('amsAdminBackendIPAddresses'))]",
+          "input": {
+            "IpAddress": "[parameters('amsAdminBackendIPAddresses')[copyIndex('backendIPAddress')]]"
+          }
+        }
+      ]
+    },
+    "appgwSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('amsAppgwSubnetName'))]",
+    "amsAdminAppgwSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('amsAdminAppgwSubnetName'))]",
+    "publicIPRef": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('amsPublicIPAddressName'))]",
+    "amsAdminPublicIPRef": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('amsAdminPublicIPAddressName'))]",
+    "amsApplicationGatewayID": "[resourceId('Microsoft.Network/applicationGateways',parameters('amsAppGatewayName'))]",
+    "amsAdminApplicationGatewayID": "[resourceId('Microsoft.Network/applicationGateways',parameters('amsAdminAppGatewayName'))]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2017-10-01",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[parameters('amsPublicIPAddressName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publicIPAllocationMethod": "[parameters('publicIPAllocationMethod')]"
+      }
+    },
+    {
+      "apiVersion": "2017-10-01",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[parameters('amsAdminPublicIPAddressName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publicIPAllocationMethod": "[parameters('publicIPAllocationMethod')]"
+      }
+    },
+    {
+      "apiVersion": "2017-10-01",
+      "name": "[parameters('amsAppGatewayName')]",
+      "type": "Microsoft.Network/applicationGateways",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', parameters('amsPublicIPAddressName'))]"
+      ],
+      "properties": {
+        "sku": {
+          "name": "[parameters('amsAppgwSkuName')]",
+          "tier": "[parameters('amsAppgwSkuTier')]",
+          "capacity": "[parameters('amsAppgwCapacity')]"
+        },
+        "sslCertificates": [
+          {
+            "name": "[parameters('amsAppGatewayCertName')]",
+            "properties": {
+              "data": "[parameters('amsAppGatewayCertData')]",
+              "password": "[parameters('amsAppGatewayCertPassword')]"
+            }
+          }
+        ],
+        "gatewayIPConfigurations": [
+          {
+            "name": "appGatewayIpConfig",
+            "properties": {
+              "subnet": {
+                "id": "[variables('appgwSubnetRef')]"
+              }
+            }
+          }
+        ],
+        "frontendIPConfigurations": [
+          {
+            "name": "appGatewayFrontendIP",
+            "properties": {
+              "PublicIPAddress": {
+                "id": "[variables('publicIPRef')]"
+              }
+            }
+          }
+        ],
+        "frontendPorts": [
+          {
+            "name": "appGatewayFrontendPort",
+            "properties": {
+              "Port": "[parameters('amsAppGatewayFrontendPort')]"
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "appGatewayBackendPool",
+            "properties": {
+              "BackendAddresses": "[variables('appgwBackendIPAddressList').backendIPAddress]"
+            }
+          }
+        ],
+        "backendHttpSettingsCollection": [
+          {
+            "name": "appGatewayBackendHttpSettings",
+            "properties": {
+              "Port": "[parameters('amsAppGatewayBackendPort')]",
+              "Protocol": "Http",
+              "CookieBasedAffinity": "[parameters('amsAppGatewayCookieBasedAffinity')]",
+              "connectionDraining": {
+                "enabled": true,
+                "drainTimeoutInSec": 60
+              },
+              "ProbeEnabled": "[parameters('amsAppgwProbeEnabled')]",
+              "Probe": {
+                "id": "[concat(variables('amsApplicationGatewayID'), '/probes/probe1')]"
+              }
+            }
+          }
+        ],
+        "httpListeners": [
+          {
+            "name": "appGatewayHttpListener",
+            "properties": {
+              "FrontendIPConfiguration": {
+                "Id": "[concat(variables('amsApplicationGatewayID'), '/frontendIPConfigurations/appGatewayFrontendIP')]"
+              },
+              "FrontendPort": {
+                "Id": "[concat(variables('amsApplicationGatewayID'), '/frontendPorts/appGatewayFrontendPort')]"
+              },
+              "Protocol": "Https",
+              "SslCertificate": {
+                "Id": "[concat(variables('amsApplicationGatewayID'), '/sslCertificates/', parameters('amsAppGatewayCertName'))]"
+              }
+            }
+          }
+        ],
+        "requestRoutingRules": [
+          {
+            "Name": "rule1",
+            "properties": {
+              "RuleType": "Basic",
+              "httpListener": {
+                "id": "[concat(variables('amsApplicationGatewayID'), '/httpListeners/appGatewayHttpListener')]"
+              },
+              "backendAddressPool": {
+                "id": "[concat(variables('amsApplicationGatewayID'), '/backendAddressPools/appGatewayBackendPool')]"
+              },
+              "backendHttpSettings": {
+                "id": "[concat(variables('amsApplicationGatewayID'), '/backendHttpSettingsCollection/appGatewayBackendHttpSettings')]"
+              }
+            }
+          }
+        ],
+        "probes": [
+          {
+            "name": "probe1",
+            "properties": {
+              "Protocol": "[parameters('amsProbeProtocol')]",
+              "Path": "[parameters('amsProbePath')]",
+              "Host": "[parameters('amsProbeHost')]",
+              "Interval": "[parameters('amsProbeIntervalInSeconds')]",
+              "Timeout": "[parameters('amsProbeTimeoutInSeconds')]",
+              "UnhealthyThreshold": "[parameters('amsProbeUnhealthyThreshold')]"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2017-10-01",
+      "name": "[parameters('amsAdminAppGatewayName')]",
+      "type": "Microsoft.Network/applicationGateways",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', parameters('amsAdminPublicIPAddressName'))]"
+      ],
+      "properties": {
+        "sku": {
+          "name": "[parameters('amsAdminAppgwSkuName')]",
+          "tier": "[parameters('amsAdminAppgwSkuTier')]",
+          "capacity": "[parameters('amsAdminAppgwCapacity')]"
+        },
+        "sslCertificates": [
+          {
+            "name": "[parameters('amsAdminAppGatewayCertName')]",
+            "properties": {
+              "data": "[parameters('amsAdminAppGatewayCertData')]",
+              "password": "[parameters('amsAdminAppGatewayCertPassword')]"
+            }
+          }
+        ],
+        "gatewayIPConfigurations": [
+          {
+            "name": "appGatewayIpConfig",
+            "properties": {
+              "subnet": {
+                "id": "[variables('amsAdminAppgwSubnetRef')]"
+              }
+            }
+          }
+        ],
+        "frontendIPConfigurations": [
+          {
+            "name": "appGatewayFrontendIP",
+            "properties": {
+              "PublicIPAddress": {
+                "id": "[variables('amsAdminPublicIPRef')]"
+              }
+            }
+          }
+        ],
+        "frontendPorts": [
+          {
+            "name": "appGatewayFrontendPort",
+            "properties": {
+              "Port": "[parameters('amsAdminAppGatewayFrontendPort')]"
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "appGatewayBackendPool",
+            "properties": {
+              "BackendAddresses": "[variables('amsAdminAppgwBackendIPAddressList').backendIPAddress]"
+            }
+          }
+        ],
+        "backendHttpSettingsCollection": [
+          {
+            "name": "appGatewayBackendHttpSettings",
+            "properties": {
+              "Port": "[parameters('amsAdminAppGatewayBackendPort')]",
+              "Protocol": "Http",
+              "CookieBasedAffinity": "[parameters('amsAdminAppGatewayCookieBasedAffinity')]",
+              "connectionDraining": {
+                "enabled": true,
+                "drainTimeoutInSec": 60
+              },
+              "ProbeEnabled": "[parameters('amsAdminAppgwProbeEnabled')]",
+              "Probe": {
+                "id": "[concat(variables('amsAdminApplicationGatewayID'), '/probes/probe1')]"
+              }
+            }
+          }
+        ],
+        "httpListeners": [
+          {
+            "name": "appGatewayHttpListener",
+            "properties": {
+              "FrontendIPConfiguration": {
+                "Id": "[concat(variables('amsAdminApplicationGatewayID'), '/frontendIPConfigurations/appGatewayFrontendIP')]"
+              },
+              "FrontendPort": {
+                "Id": "[concat(variables('amsAdminApplicationGatewayID'), '/frontendPorts/appGatewayFrontendPort')]"
+              },
+              "Protocol": "Https",
+              "SslCertificate": {
+                "Id": "[concat(variables('amsAdminApplicationGatewayID'), '/sslCertificates/', parameters('amsAdminAppGatewayCertName'))]"
+              }
+            }
+          }
+        ],
+        "requestRoutingRules": [
+          {
+            "Name": "rule1",
+            "properties": {
+              "RuleType": "Basic",
+              "httpListener": {
+                "id": "[concat(variables('amsAdminApplicationGatewayID'), '/httpListeners/appGatewayHttpListener')]"
+              },
+              "backendAddressPool": {
+                "id": "[concat(variables('amsAdminApplicationGatewayID'), '/backendAddressPools/appGatewayBackendPool')]"
+              },
+              "backendHttpSettings": {
+                "id": "[concat(variables('amsAdminApplicationGatewayID'), '/backendHttpSettingsCollection/appGatewayBackendHttpSettings')]"
+              }
+            }
+          }
+        ],
+        "probes": [
+          {
+            "Name": "probe1",
+            "properties": {
+              "Protocol": "[parameters('amsAdminProbeProtocol')]",
+              "Path": "[parameters('amsAdminProbePath')]",
+              "Host": "[parameters('amsAdminProbeHost')]",
+              "Interval": "[parameters('amsAdminProbeIntervalInSeconds')]",
+              "Timeout": "[parameters('amsAdminProbeTimeoutInSeconds')]",
+              "UnhealthyThreshold": "[parameters('amsAdminProbeUnhealthyThreshold')]"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "outputs": {
+    "amsPublicIP": {
+      "type": "string",
+      "value": "[reference(concat('Microsoft.Network/publicIPAddresses/', parameters('amsPublicIPAddressName'))).ipAddress]"
+    },
+    "amsAppGatewayFQDN": {
+      "type": "string",
+      "value": "[reference(concat('Microsoft.Network/publicIPAddresses/', parameters('amsPublicIPAddressName'))).dnsSettings.fqdn]"
+    },
+    "amsAdminPublicIP": {
+      "type": "string",
+      "value": "[reference(concat('Microsoft.Network/publicIPAddresses/', parameters('amsAdminPublicIPAddressName'))).ipAddress]"
+    },
+    "amsAdminAppGatewayFQDN": {
+      "type": "string",
+      "value": "[reference(concat('Microsoft.Network/publicIPAddresses/', parameters('amsAdminPublicIPAddressName'))).dnsSettings.fqdn]"
+    }
+  }
+}
