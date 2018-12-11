@@ -70,3 +70,8 @@ obj/
 *.vsbuild/
 *.dSYM/
 
+
+# misc
+.hidden/
+var-cred*.json
+var-cred*.env
