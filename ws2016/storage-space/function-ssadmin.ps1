@@ -45,12 +45,17 @@ Function New-StorageSpaceVolume() {
             [bool]$is_Disk_PartitionStyle_Ready = $false            
             
             if ((($diskHealthStatus | measure-object).Count -eq 1 ) -and ($diskHealthStatus.Name -eq "Healthy")) { $is_Disk_HealthStatus_Ready   = $true }
-            if ((($diskOpStatus | measure-object).Count -eq 1)      -and ($diskOpStatus.Name     -eq "Offline")) { $is_Disk_OpStatus_Ready       = $true }
+            if (($diskOpStatus | measure-object).Count -eq 1)                                                    { $is_Disk_OpStatus_Ready       = $true }
             if (($diskSizeMatch | measure-object).Count -eq 1)                                                   { $is_Disk_Size_Ready           = $true }
             if ((($diskPartitonStyle | measure-object).Count -eq 1) -and ($diskPartitonStyle.Name -eq "RAW"))    { $is_Disk_PartitionStyle_Ready = $true }
 
             if (($is_Disk_HealthStatus_Ready) -and ($is_Disk_OpStatus_Ready) -and ($is_Disk_Size_Ready) -and ($is_Disk_PartitionStyle_Ready)) {
             } else {
+                Write-Host '$is_Disk_HealthStatus_Ready :' $is_Disk_HealthStatus_Ready
+                Write-Host '$is_Disk_OpStatus_Ready :' $is_Disk_OpStatus_Ready       
+                Write-Host '$is_Disk_Size_Ready :' $is_Disk_Size_Ready
+                Write-Host '$is_Disk_PartitionStyle_Ready :' $is_Disk_PartitionStyle_Ready
+
                 $diskHealthStatus
                 $diskOpStatus
                 $diskSizeMatch
