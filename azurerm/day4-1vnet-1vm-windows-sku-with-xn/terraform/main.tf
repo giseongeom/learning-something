@@ -123,6 +123,12 @@ module "vm" {
   osdisk_os_type           = "Windows"
   osdisk_disk_size_gb      = "256"
 
+  datadisk_name              = "${var.vmName}_datadisk"
+  datadisk_caching           = "ReadOnly"
+  datadisk_create_option     = "Empty"
+  datadisk_managed_disk_type = "Premium_LRS"
+  datadisk_disk_size_gb      = "256"
+
   computer_name  = "${var.vmName}"
   admin_username = "${var.adminUsername}"
   admin_password = "${var.adminPassword}"
@@ -173,9 +179,7 @@ variable "adminUsername" {
   default = "vagrant"
 }
 
-variable "adminPassword" {
-  default = "Pa$$w0rd1234!"
-}
+variable "adminPassword" {}
 
 variable "home_ip_list" {
   type = "list"

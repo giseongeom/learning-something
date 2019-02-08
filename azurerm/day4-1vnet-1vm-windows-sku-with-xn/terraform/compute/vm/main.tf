@@ -5,10 +5,6 @@ resource "azurerm_virtual_machine" "vm" {
   network_interface_ids = ["${var.network_interface_ids}"]
   vm_size               = "${var.vm_size}"
 
-  # Uncomment this line to delete the OS disk automatically when deleting the VM
-  # delete_os_disk_on_termination = true
-
-
   # Uncomment this line to delete the data disks automatically when deleting the VM
   # delete_data_disks_on_termination = true
 
@@ -25,6 +21,14 @@ resource "azurerm_virtual_machine" "vm" {
     managed_disk_type = "${var.osdisk_managed_disk_type}"
     os_type           = "${var.osdisk_os_type}"
     disk_size_gb      = "${var.osdisk_disk_size_gb}"
+  }
+  storage_data_disk {
+    name              = "${var.datadisk_name}_${random_id.vm.dec}"
+    caching           = "${var.datadisk_caching}"
+    create_option     = "${var.datadisk_create_option}"
+    managed_disk_type = "${var.datadisk_managed_disk_type}"
+    disk_size_gb      = "${var.datadisk_disk_size_gb}"
+    lun               = 0
   }
   os_profile {
     computer_name  = "${var.computer_name}-${random_string.vm.result}"
@@ -67,6 +71,12 @@ variable osdisk_create_option {}
 variable osdisk_managed_disk_type {}
 variable osdisk_os_type {}
 variable osdisk_disk_size_gb {}
+
+variable datadisk_managed_disk_type {}
+variable datadisk_disk_size_gb {}
+variable datadisk_name {}
+variable datadisk_create_option {}
+variable datadisk_caching {}
 
 variable computer_name {}
 variable admin_username {}

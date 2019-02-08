@@ -42,7 +42,7 @@
     "imagePublisher": "MicrosoftWindowsServer",
     "imageOffer": "WindowsServer",
     "nsg1Name": "AllowRDP",
-    "officeIPCidr": "210.216.0.0/16",
+    "officeIPCidr": "103.114.0.0/16",
     "homeIPCidr": "1.228.0.0/16",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('vnetName'))]",
     "subnet1Ref": "[concat(variables('vnetID'),'/subnets/',variables('subnet1Name'))]"
