@@ -10,15 +10,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # please see the online documentation at vagrantup.com.
 
   config.vm.communicator = "ssh"
-  config.vm.box          = "ubuntu/trusty64"
+  config.vm.box          = "bento/centos-7.2"
+
+  # vbguest
+  config.vbguest.auto_update = false
 
 
   # If true, then any SSH connections made will enable agent forwarding.
   # Default value: false
   config.ssh.forward_agent = true
-  config.ssh.insert_key  = false
-
-
 
   # config.vm.network "forwarded_port"
   #config.vm.network "forwarded_port", id: "ssh", guest: 22, host: 2222, disabled: true
@@ -34,32 +34,31 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     vb.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
   end
  
+  config.vm.define :node1, primary: true do |cfg|
+    cfg.vm.hostname = "node1"
+    cfg.vm.synced_folder ".", "/vagrant"
+    cfg.vm.boot_timeout = 300
+    cfg.vm.network "private_network", ip: "192.168.56.201"
 
+    #cfg.vm.provision "ansible" do |ansible|
+    #  ansible.playbook = "playbook.yml"
+	  #  ansible.verbose = "v"
+    #  # Disable default limit (required with Vagrant 1.5+)
+    #  ansible.limit = 'all'
+	  #  ansible.raw_arguments = ['--private-key=~/.ssh/insecure_private_key']
+	  #  ansible.raw_ssh_args  = ['-o ControlMaster=no']
+    #end
 
-    config.vm.define :n1, primary: true do |cfg|
-      cfg.vm.hostname = "mgmt"
-      cfg.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: ".git/"
-      cfg.vm.boot_timeout = 300
-      cfg.vm.network "private_network", ip: "192.168.56.200"
-      cfg.vm.provision "ansible" do |ansible|
-        ansible.playbook = "playbook.yml"
-	      ansible.verbose = "v"
-        # Disable default limit (required with Vagrant 1.5+)
-        ansible.limit = 'all'
-	      ansible.raw_arguments = ['--private-key=~/.ssh/insecure_private_key']
-	      ansible.raw_ssh_args  = ['-o ControlMaster=no']
-      end
-      cfg.vm.provision "shell", inline: "ls -l /tmp"
-    end
+    #cfg.vm.provision "shell", inline: "ls -l /tmp"
+  end
 
-    config.vm.define :n2, autostart: false do |cfg|
-      cfg.vm.hostname = "mgmt"
-      cfg.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: ".git/"
-      cfg.vm.boot_timeout = 300
-      cfg.vm.network "private_network", ip: "192.168.56.201"
-    end   
-
-
+  config.vm.define :node2, autostart: false do |cfg|
+    cfg.vm.hostname = "node2"
+    cfg.vm.synced_folder ".", "/vagrant"
+    #cfg.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: ".git/"
+    cfg.vm.boot_timeout = 300
+    cfg.vm.network "private_network", ip: "192.168.56.202"
+  end   
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs

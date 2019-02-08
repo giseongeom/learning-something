@@ -1,0 +1,10 @@
+---
+- name: playbook tutorial
+  hosts: all
+  become: true
+  tasks:
+    - name: ssh-keygen test
+      command: "ssh-keygen -b 2048 -t rsa -N '' -f /tmp/new-id-rsa"
+      args:
+        creates: /tmp/new-id-rsa
+

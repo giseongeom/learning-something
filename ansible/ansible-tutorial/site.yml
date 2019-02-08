@@ -1,0 +1,29 @@
+---
+- name: playbook tutorial
+  hosts: all
+  become: true
+  tasks:
+    - name: libselinux-python installed
+      yum:
+        name: libselinux-python
+        state: present
+
+    - name: EPEL-repo enabled
+      yum:
+        name: epel-release
+        state: present
+
+    - name: nginx installed
+      yum:
+        name: nginx
+        state: present
+
+    - name: nginx start-up configured
+      service:
+        name: nginx
+        state: started
+        enabled: true
+
+
+
+
