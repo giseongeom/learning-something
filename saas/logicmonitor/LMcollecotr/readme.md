@@ -36,7 +36,7 @@ PS > $company   = 'mycompany'
 PS > Add-LMCollector -accessId $accessId -accessKey $accessKey -company $company
 554
 
-PS > $col = Get-LMCollectorInfo -accessId $accessId -accessKey $accessKey -company $company -collectorId 553
+PS > $col = Get-LMCollectorInfo -accessId $accessId -accessKey $accessKey -company $company -collectorId 554
 
 PS > $col.data.id
 554
