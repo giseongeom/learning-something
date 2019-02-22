@@ -13,20 +13,19 @@ AzureRM template for DSC Lab
 ## LAB Deployment
 
 ```powershell
-PS > az group create -l koreacentral -n dsclab-$(Get-Random) --verbose
-{
-  "id": "/subscriptions/생략/resourceGroups/dsclab-1982683538",
-  "location": "koreacentral",
-  "managedBy": null,
-  "name": "dsclab-1982683538",
-  "properties": {
-    "provisioningState": "Succeeded"
-  },
-  "tags": null,
-  "type": null
-}
-PS > az group deployment create -g dsclab-1982683538 --template-file .\azuredeploy.json --parameters `@azuredeploy.parameters.json --verbose
+PS > az group create -l koreacentral -n [RESOURCE GROUP] --verbose
 
+
+PS > az group deployment create -g [RESOURCE GROUP] --template-file .\azuredeploy.json --parameters `@azuredeploy.parameters.json --verbose
+
+
+PS> az vm list-ip-addresses -g [RESOURCE GROUP] -o table
+VirtualMachine    PublicIPAddresses    PrivateIPAddresses
+----------------  -------------------  --------------------
+dc                XXX.YYY.ZZZ.OOO        10.63.1.11
+pull              XXX.YYY.ZZZ.OOO        10.63.1.21
+ms1               XXX.YYY.ZZZ.OOO        10.63.1.31
+ms2               XXX.YYY.ZZZ.OOO        10.63.1.32
 
 ```
 
