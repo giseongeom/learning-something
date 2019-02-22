@@ -89,7 +89,7 @@
     {
       "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "pip-node1",
+      "name": "pip-ms1",
       "location": "[variables('location')]",
       "properties": {
         "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
@@ -99,7 +99,7 @@
     {
       "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "pip-node2",
+      "name": "pip-ms2",
       "location": "[variables('location')]",
       "properties": {
         "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
@@ -172,10 +172,10 @@
     {
       "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "nic-node1",
+      "name": "nic-ms1",
       "location": "[variables('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/', 'pip-node1')]",
+        "[concat('Microsoft.Network/publicIPAddresses/', 'pip-ms1')]",
         "[concat('Microsoft.Network/virtualNetworks/', variables('vnetName'))]",
         "[concat('Microsoft.Network/networkSecurityGroups/', variables('nsg1Name'))]",
         "[resourceId('Microsoft.Compute/virtualMachines/', 'dc')]"
@@ -191,7 +191,7 @@
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "10.63.1.31",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-node1')]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-ms1')]"
               },
               "subnet": {
                 "id": "[variables('subnet1Ref')]"
@@ -204,10 +204,10 @@
     {
       "apiVersion": "2017-10-01",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "nic-node2",
+      "name": "nic-ms2",
       "location": "[variables('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/', 'pip-node2')]",
+        "[concat('Microsoft.Network/publicIPAddresses/', 'pip-ms2')]",
         "[concat('Microsoft.Network/virtualNetworks/', variables('vnetName'))]",
         "[concat('Microsoft.Network/networkSecurityGroups/', variables('nsg1Name'))]",
         "[resourceId('Microsoft.Compute/virtualMachines/', 'dc')]"
@@ -223,7 +223,7 @@
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "10.63.1.32",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-node2')]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-ms2')]"
               },
               "subnet": {
                 "id": "[variables('subnet1Ref')]"
@@ -495,10 +495,10 @@
     {
       "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "node1",
+      "name": "ms1",
       "location": "[variables('location')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces/', 'nic-node1')]",
+        "[resourceId('Microsoft.Network/networkInterfaces/', 'nic-ms1')]",
         "[resourceId('Microsoft.Compute/virtualMachines/', 'pull')]",
         "[resourceId('Microsoft.Compute/virtualMachines/extensions', 'pull', 'adjoin')]"
       ],
@@ -507,7 +507,7 @@
           "vmSize": "[parameters('vmSize')]"
         },
         "osProfile": {
-          "computerName": "node1",
+          "computerName": "ms1",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]",
           "windowsConfiguration": {
@@ -530,7 +530,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'nic-node1')]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'nic-ms1')]"
             }
           ]
         },
@@ -547,7 +547,7 @@
           "name": "sleep",
           "location": "[resourceGroup().location]",
           "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines/', 'node1')]"
+            "[resourceId('Microsoft.Compute/virtualMachines/', 'ms1')]"
           ],
           "properties": {
             "publisher": "Microsoft.Compute",
@@ -565,8 +565,8 @@
           "name": "adjoin",
           "location": "[variables('location')]",
           "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines/', 'node1')]",
-            "[resourceId('Microsoft.Compute/virtualMachines/extensions', 'node1', 'sleep')]"
+            "[resourceId('Microsoft.Compute/virtualMachines/', 'ms1')]",
+            "[resourceId('Microsoft.Compute/virtualMachines/extensions', 'ms1', 'sleep')]"
           ],
           "properties": {
             "publisher": "Microsoft.Compute",
@@ -590,19 +590,19 @@
     {
       "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "node2",
+      "name": "ms2",
       "location": "[variables('location')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces/', 'nic-node2')]",
-        "[resourceId('Microsoft.Compute/virtualMachines/', 'node1')]",
-        "[resourceId('Microsoft.Compute/virtualMachines/extensions', 'node1', 'adjoin')]"
+        "[resourceId('Microsoft.Network/networkInterfaces/', 'nic-ms2')]",
+        "[resourceId('Microsoft.Compute/virtualMachines/', 'ms1')]",
+        "[resourceId('Microsoft.Compute/virtualMachines/extensions', 'ms1', 'adjoin')]"
       ],
       "properties": {
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
         },
         "osProfile": {
-          "computerName": "node2",
+          "computerName": "ms2",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]",
           "windowsConfiguration": {
@@ -625,7 +625,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'nic-node2')]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'nic-ms2')]"
             }
           ]
         },
@@ -642,7 +642,7 @@
           "name": "sleep",
           "location": "[resourceGroup().location]",
           "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines/', 'node2')]"
+            "[resourceId('Microsoft.Compute/virtualMachines/', 'ms2')]"
           ],
           "properties": {
             "publisher": "Microsoft.Compute",
@@ -660,8 +660,8 @@
           "name": "adjoin",
           "location": "[variables('location')]",
           "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines/', 'node2')]",
-            "[resourceId('Microsoft.Compute/virtualMachines/extensions', 'node2', 'sleep')]"
+            "[resourceId('Microsoft.Compute/virtualMachines/', 'ms2')]",
+            "[resourceId('Microsoft.Compute/virtualMachines/extensions', 'ms2', 'sleep')]"
           ],
           "properties": {
             "publisher": "Microsoft.Compute",
@@ -692,13 +692,13 @@
       "type": "string",
       "value": "[reference(concat('Microsoft.Network/publicIPAddresses/', 'pip-pull')).ipAddress]"
     },
-    "node1-pip": {
+    "ms1-pip": {
       "type": "string",
-      "value": "[reference(concat('Microsoft.Network/publicIPAddresses/', 'pip-node1')).ipAddress]"
+      "value": "[reference(concat('Microsoft.Network/publicIPAddresses/', 'pip-ms1')).ipAddress]"
     },
-    "node2-pip": {
+    "ms2-pip": {
       "type": "string",
-      "value": "[reference(concat('Microsoft.Network/publicIPAddresses/', 'pip-node2')).ipAddress]"
+      "value": "[reference(concat('Microsoft.Network/publicIPAddresses/', 'pip-ms2')).ipAddress]"
     }
   }
 }
