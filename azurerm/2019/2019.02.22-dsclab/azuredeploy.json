@@ -335,12 +335,16 @@
       ],
       "properties": {
         "hardwareProfile": {
-          "vmSize": "Standard_DS4_v2"
+          "vmSize": "[parameters('vmSize')]"
         },
         "osProfile": {
           "computerName": "dc",
           "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
+          "adminPassword": "[parameters('adminPassword')]",
+          "windowsConfiguration": {
+            "provisionVMAgent": true,
+            "enableAutomaticUpdates": false
+          }
         },
         "storageProfile": {
           "imageReference": {
@@ -399,8 +403,9 @@
       "name": "pull",
       "location": "[variables('location')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces/', 'nic-pull')]",
-        "[resourceId('Microsoft.Compute/virtualMachines/', 'dc')]"
+        "[resourceId('Microsoft.Compute/virtualMachines/', 'dc')]",
+        "[resourceId('Microsoft.Compute/virtualMachines/extensions', 'dc', 'install-adds')]",
+        "[resourceId('Microsoft.Network/networkInterfaces/', 'nic-pull')]"
       ],
       "properties": {
         "hardwareProfile": {
@@ -409,7 +414,11 @@
         "osProfile": {
           "computerName": "pull",
           "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
+          "adminPassword": "[parameters('adminPassword')]",
+          "windowsConfiguration": {
+            "provisionVMAgent": true,
+            "enableAutomaticUpdates": false
+          }
         },
         "storageProfile": {
           "imageReference": {
@@ -420,7 +429,7 @@
           },
           "osDisk": {
             "createOption": "FromImage",
-            "diskSizeGB": 256
+            "diskSizeGB": 1024
           }
         },
         "networkProfile": {
@@ -450,13 +459,8 @@
             "type": "CustomScriptExtension",
             "typeHandlerVersion": "1.9",
             "autoUpgradeMinorVersion": true,
-            "settings": {
-              "fileUris": [
-                "https://raw.githubusercontent.com/giseongeom/learning-something/master/azurerm/2019/2019.02.22-dsclab/just-sleep.ps1"
-              ]
-            },
             "protectedSettings": {
-              "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File just-sleep.ps1"
+              "commandToExecute": "powershell -ExecutionPolicy Unrestricted -Command start-sleep 120"
             }
           }
         },
@@ -495,7 +499,8 @@
       "location": "[variables('location')]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/networkInterfaces/', 'nic-node1')]",
-        "[resourceId('Microsoft.Compute/virtualMachines/', 'dc')]"
+        "[resourceId('Microsoft.Compute/virtualMachines/', 'pull')]",
+        "[resourceId('Microsoft.Compute/virtualMachines/extensions', 'pull', 'adjoin')]"
       ],
       "properties": {
         "hardwareProfile": {
@@ -504,7 +509,11 @@
         "osProfile": {
           "computerName": "node1",
           "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
+          "adminPassword": "[parameters('adminPassword')]",
+          "windowsConfiguration": {
+            "provisionVMAgent": true,
+            "enableAutomaticUpdates": false
+          }
         },
         "storageProfile": {
           "imageReference": {
@@ -515,7 +524,7 @@
           },
           "osDisk": {
             "createOption": "FromImage",
-            "diskSizeGB": 256
+            "diskSizeGB": 1024
           }
         },
         "networkProfile": {
@@ -545,13 +554,8 @@
             "type": "CustomScriptExtension",
             "typeHandlerVersion": "1.9",
             "autoUpgradeMinorVersion": true,
-            "settings": {
-              "fileUris": [
-                "https://raw.githubusercontent.com/giseongeom/learning-something/master/azurerm/2019/2019.02.22-dsclab/just-sleep.ps1"
-              ]
-            },
             "protectedSettings": {
-              "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File just-sleep.ps1"
+              "commandToExecute": "powershell -ExecutionPolicy Unrestricted -Command start-sleep 120"
             }
           }
         },
@@ -590,7 +594,8 @@
       "location": "[variables('location')]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/networkInterfaces/', 'nic-node2')]",
-        "[resourceId('Microsoft.Compute/virtualMachines/', 'dc')]"
+        "[resourceId('Microsoft.Compute/virtualMachines/', 'node1')]",
+        "[resourceId('Microsoft.Compute/virtualMachines/extensions', 'node1', 'adjoin')]"
       ],
       "properties": {
         "hardwareProfile": {
@@ -599,7 +604,11 @@
         "osProfile": {
           "computerName": "node2",
           "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
+          "adminPassword": "[parameters('adminPassword')]",
+          "windowsConfiguration": {
+            "provisionVMAgent": true,
+            "enableAutomaticUpdates": false
+          }
         },
         "storageProfile": {
           "imageReference": {
@@ -610,7 +619,7 @@
           },
           "osDisk": {
             "createOption": "FromImage",
-            "diskSizeGB": 256
+            "diskSizeGB": 1024
           }
         },
         "networkProfile": {
@@ -640,13 +649,8 @@
             "type": "CustomScriptExtension",
             "typeHandlerVersion": "1.9",
             "autoUpgradeMinorVersion": true,
-            "settings": {
-              "fileUris": [
-                "https://raw.githubusercontent.com/giseongeom/learning-something/master/azurerm/2019/2019.02.22-dsclab/just-sleep.ps1"
-              ]
-            },
             "protectedSettings": {
-              "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File just-sleep.ps1"
+              "commandToExecute": "powershell -ExecutionPolicy Unrestricted -Command start-sleep 120"
             }
           }
         },
