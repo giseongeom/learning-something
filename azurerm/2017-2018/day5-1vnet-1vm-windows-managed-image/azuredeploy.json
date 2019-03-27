@@ -162,7 +162,7 @@
       }
     },
     {
-      "apiVersion": "2017-03-30",
+      "apiVersion": "2018-10-01",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[parameters('vmName')]",
       "location": "[variables('location')]",
@@ -185,7 +185,10 @@
           },
           "osDisk": {
             "createOption": "FromImage",
-            "diskSizeGB": 256
+            "diskSizeGB": 256,
+            "managedDisk": {
+              "storageAccountType": "Premium_LRS"
+            }
           }
         },
         "networkProfile": {
