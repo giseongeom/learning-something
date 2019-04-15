@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: Base
+
+Parameters:
+  TemplateBaseURL:
+    Description: Base S3 url template files will be located.
+    Type: String
+
+  EnvironmentId:
+    Type: String
+    AllowedValues:
+      - prod
+      - qa
+      - dev
+
+  ProductId:
+    Type: String
+
+Resources:
+  S3Stack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+          EnvironmentId: !Ref EnvironmentId
+          ProductId: !Ref ProductId
+          S3BucketName: !Sub '20190304-${AWS::AccountId}-example-s3bucket-${AWS::Region}'
+      TemplateURL: !Sub ${TemplateBaseURL}/s3.yml
+
+  VpcStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+          EnvironmentId: !Ref EnvironmentId
+          ProductId: !Ref ProductId
+          VpcName: LAB
+          VpcCIDR: 10.192.0.0/16
+          PublicSubnet1CIDR: 10.192.10.0/24
+          PublicSubnet2CIDR: 10.192.20.0/24
+          MgmtSubnetCIDR: 10.192.30.0/24
+      TemplateURL: !Sub ${TemplateBaseURL}/vpc.yml
+
+
+
+#Conditions:
+#  CreateProdResources: !Equals [!Ref EnvType, prod]
+#  CreateQAResources: !Equals [!Ref EnvType, qa]
+#  CreateDevResources: !Equals [!Ref EnvType, dev]
+
+  

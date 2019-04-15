@@ -1,0 +1,25 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: S3
+
+Parameters:
+  S3BucketName:
+    Type: String
+
+  EnvironmentId:
+    Type: String
+
+  ProductId:
+    Type: String
+
+Resources:
+  BaseS3bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref S3BucketName
+      Tags:
+        - Key: Env
+          Value: !Ref EnvironmentId
+        - Key: Product
+          Value: !Ref ProductId
+
