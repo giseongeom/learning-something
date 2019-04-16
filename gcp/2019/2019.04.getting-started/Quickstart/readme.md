@@ -21,6 +21,8 @@ quickstart-deployment-vm-jp  compute.v1.instance  COMPLETED  []
 ## List and view details of deployment 
 
 - `gcloud deployment-manager deployments list`
+- `gcloud deployment-manager deployments describe [DEPLOYMENT_NAME]`
+- `gcloud compute instances list`
 
 ```powershell
 PS > gcloud deployment-manager deployments list
