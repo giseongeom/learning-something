@@ -1,0 +1,15 @@
+{
+  "Name": "appGwContributor",
+  "IsCustom": true,
+  "Description": "Can operate Azure Application Gateways.",
+  "Actions": [
+    "*/read",
+    "Microsoft.Resources/subscriptions/resourceGroups/read",
+    "Microsoft.Network/applicationGateways/*"
+  ],
+  "NotActions": [
+  ],
+  "AssignableScopes": [
+    "/subscriptions/1111-2222-3333-4444"
+  ]
+}

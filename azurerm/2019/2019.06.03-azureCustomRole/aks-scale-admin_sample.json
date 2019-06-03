@@ -1,0 +1,18 @@
+{
+  "Name": "aksScaleAdministrators",
+  "IsCustom": true,
+  "Description": "Can monitor and scale-in/out AKS-enabled virtual machines.",
+  "Actions": [
+    "Microsoft.Resources/subscriptions/resourceGroups/write",
+    "Microsoft.Resources/subscriptions/resourceGroups/delete",
+    "Microsoft.Storage/checkNameAvailability/*",
+    "Microsoft.Storage/storageAccounts/*",
+    "Microsoft.ContainerService/*"
+  ],
+  "NotActions": [
+
+  ],
+  "AssignableScopes": [
+    "/subscriptions/1111-2222-3333-4444"
+  ]
+}
