@@ -1,0 +1,262 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "type": "string",
+      "defaultValue": "cmwlab"
+    },
+    "vmCount": {
+      "type": "int",
+      "defaultValue": 2
+    },
+    "vmSize": {
+      "type": "string",
+      "allowedValues": [
+        "Standard_D8s_v3",
+        "Standard_D16s_v3",
+        "Standard_D32s_v3",
+        "Standard_D48s_v3",
+        "Standard_D64s_v3",
+        "Standard_E8s_v3",
+        "Standard_E16s_v3",
+        "Standard_E20s_v3",
+        "Standard_E32s_v3",
+        "Standard_E48s_v3",
+        "Standard_E64s_v3",
+        "Standard_E64is_v3"
+      ],
+      "defaultValue": "Standard_D16s_v3"
+    },
+    "adminUsername": {
+      "type": "string",
+      "defaultValue": "vagrant"
+    },
+    "adminPassword": {
+      "type": "string",
+      "defaultValue": "Pa$$w0rd12!!"
+    },
+    "windowsOSVersion": {
+      "type": "string",
+      "defaultValue": "2019-Datacenter",
+      "allowedValues": [
+        "2016-Datacenter",
+        "2019-Datacenter"
+      ]
+    }
+  },
+  "variables": {
+    "vnetName": "cmwlabvNet",
+    "gatewaySubnetName": "GatewaySubnet",
+    "subnet1Name": "subnet-1",
+    "subnet2Name": "subnet-2",
+    "vnetPrefix": "172.16.0.0/20",
+    "gatewaySubnetPrefix": "172.16.0.0/24",
+    "subnet1Prefix": "172.16.1.0/24",
+    "subnet2Prefix": "172.16.2.0/24",
+    "publicIPAddressType": "Static",
+    "publicIPAddressName": "[parameters('vmName')]",
+    "nicName": "[parameters('vmName')]",
+    "location": "[resourceGroup().location]",
+    "imagePublisher": "MicrosoftWindowsServer",
+    "imageOffer": "WindowsServer",
+    "imageSku": "[parameters('windowsOSVersion')]",
+    "nsg1Name": "allowRemoteAdmin-nsg",
+    "nsgIpAddressList": [
+      {
+        "description": "From Home1",
+        "sourceAddressPrefix": "1.228.0.0/16"
+      },
+      {
+        "description": "From Home2",
+        "sourceAddressPrefix": "1.228.0.0/16"
+      },
+      {
+        "description": "From Lab1",
+        "sourceAddressPrefix": "52.231.0.0/16"
+      },
+      {
+        "description": "From Lab2",
+        "sourceAddressPrefix": "52.231.0.0/16"
+      },
+      {
+        "description": "From Office1",
+        "sourceAddressPrefix": "103.0.0.0/8"
+      },
+      {
+        "description": "From Office1",
+        "sourceAddressPrefix": "103.0.0.0/8"
+      },
+      {
+        "description": "From Office2",
+        "sourceAddressPrefix": "218.0.0.0/8"
+      }
+    ],
+    "nsgBaseIdx": 200,
+    "nsgRules": {
+      "copy": [
+        {
+          "name": "nsgSecurityRules",
+          "count": "[length(variables('nsgIpAddressList'))]",
+          "input": {
+            "name": "[concat('allow-admin', '-', copyIndex('nsgSecurityRules'), '-', take(uniqueString(variables('nsgIpAddressList')[copyIndex('nsgSecurityRules')].description), 4))]",
+            "properties": {
+              "description": "[variables('nsgIpAddressList')[copyIndex('nsgSecurityRules')].description]",
+              "priority": "[add(variables('nsgBaseIdx'), mul(copyIndex('nsgSecurityRules'), 10))]",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "[variables('nsgIpAddressList')[copyIndex('nsgSecurityRules')].sourceAddressPrefix]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "direction": "Inbound"
+            }
+          }
+        }
+      ]
+    },
+    "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('vnetName'))]",
+    "subnet1Ref": "[concat(variables('vnetID'),'/subnets/',variables('subnet1Name'))]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2017-10-01",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[concat(variables('publicIPAddressName'), copyIndex(1), '-', uniqueString(resourceGroup().id), '-', 'pip')]",
+      "location": "[variables('location')]",
+      "copy": {
+        "name": "pipcopy",
+        "count": "[parameters('vmCount')]"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
+        "publicIPAddressVersion": "IPv4"
+      }
+    },
+    {
+      "apiVersion": "2017-10-01",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(variables('nicName'), copyIndex(1), '-', uniqueString(resourceGroup().id), '-', 'nic')]",
+      "location": "[variables('location')]",
+      "copy": {
+        "name": "niccopy",
+        "count": "[parameters('vmCount')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'), copyIndex(1), '-', uniqueString(resourceGroup().id), '-', 'pip')]",
+        "[concat('Microsoft.Network/virtualNetworks/', variables('vnetName'))]",
+        "[concat('Microsoft.Network/networkSecurityGroups/', variables('nsg1Name'))]"
+      ],
+      "properties": {
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg1Name'))]"
+        },
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('publicIPAddressName'), copyIndex(1), '-', uniqueString(resourceGroup().id), '-', 'pip'))]"
+              },
+              "subnet": {
+                "id": "[variables('subnet1Ref')]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2017-10-01",
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[variables('vnetName')]",
+      "location": "[variables('location')]",
+      "comments": "Build a Virtual Network with /20 address space",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('vnetPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('gatewaySubnetName')]",
+            "properties": {
+              "addressPrefix": "[variables('gatewaySubnetPrefix')]"
+            }
+          },
+          {
+            "name": "[variables('subnet1Name')]",
+            "properties": {
+              "addressPrefix": "[variables('subnet1Prefix')]"
+            }
+          },
+          {
+            "name": "[variables('subnet2Name')]",
+            "properties": {
+              "addressPrefix": "[variables('subnet2Prefix')]"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2017-10-01",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('nsg1Name')]",
+      "location": "[variables('location')]",
+      "properties": {
+        "securityRules": "[variables('nsgRules').nsgSecurityRules]"
+      }
+    },
+    {
+      "apiVersion": "2017-03-30",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('vmName'), copyIndex(1), '-', 'vm')]",
+      "location": "[variables('location')]",
+      "copy": {
+        "name": "vmcopy",
+        "count": "[parameters('vmCount')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces/', concat(variables('nicName'), copyIndex(1), '-', uniqueString(resourceGroup().id), '-', 'nic'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[parameters('vmName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[variables('imagePublisher')]",
+            "offer": "[variables('imageOffer')]",
+            "sku": "[variables('imageSku')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage",
+            "diskSizeGB": 256
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('nicName'), copyIndex(1), '-', uniqueString(resourceGroup().id), '-', 'nic'))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": false
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {}
+}
