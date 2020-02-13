@@ -220,6 +220,10 @@
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(parameters('vmName'), copyIndex(1), '-', 'vm')]",
       "location": "[variables('location')]",
+      "tags": {
+        "dedicated_node_group": "true",
+        "Product": "CMW-LAB"
+      },
       "copy": {
         "name": "vmcopy",
         "count": "[parameters('vmCount')]"
