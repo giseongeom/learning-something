@@ -123,7 +123,8 @@
       ]
     },
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('vnetName'))]",
-    "subnet1Ref": "[concat(variables('vnetID'),'/subnets/',variables('subnet1Name'))]"
+    "subnet1Ref": "[concat(variables('vnetID'),'/subnets/',variables('subnet1Name'))]",
+    "isDngVmTag": "[if(parameters('isDngVM'), 'true', 'false')]"
   },
   "resources": [
     {
@@ -223,7 +224,7 @@
       "name": "[concat(parameters('vmName'), copyIndex(1), '-', 'vm')]",
       "location": "[variables('location')]",
       "tags": {
-        "dedicated_node_group": "[parameters('isDngVM')]",
+        "dedicated_node_group": "[variables('isDngVmTag')]",
         "Product": "CMW-LAB"
       },
       "copy": {
