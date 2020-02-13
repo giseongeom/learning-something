@@ -10,6 +10,10 @@
       "type": "int",
       "defaultValue": 2
     },
+    "isDngVM": {
+      "type": "bool",
+      "defaultValue": false
+    },
     "vmSize": {
       "type": "string",
       "allowedValues": [
@@ -20,12 +24,10 @@
         "Standard_D64s_v3",
         "Standard_E8s_v3",
         "Standard_E16s_v3",
-        "Standard_E20s_v3",
         "Standard_E32s_v3",
         "Standard_E48s_v3",
         "Standard_E64s_v3",
         "Standard_E64is_v3",
-        "Standard_E64i_v3",
         "Standard_M128ms",
         "Standard_GS5",
         "Standard_G5",
@@ -221,7 +223,7 @@
       "name": "[concat(parameters('vmName'), copyIndex(1), '-', 'vm')]",
       "location": "[variables('location')]",
       "tags": {
-        "dedicated_node_group": "true",
+        "dedicated_node_group": "[parameters('isDngVM')]",
         "Product": "CMW-LAB"
       },
       "copy": {
