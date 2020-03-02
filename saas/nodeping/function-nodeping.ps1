@@ -1,43 +1,44 @@
 ﻿Function Get-NodePingCheckList() {
-    Param(   
+    Param(
         [Parameter(Mandatory = $true)]
         [string]$token
     )
-         
+
     BEGIN {
         $mySecretToken = $token
-        
+
         # See https://github.com/PowerShell/PowerShell/issues/4274
-        $my_cred      = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($mySecretToken+':'+'mysecret'))
-        $req_header   = @{
+        $my_cred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($mySecretToken + ':' + 'mysecret'))
+        $req_header = @{
             "Authorization" = "Basic $my_cred"
-            "Accept" = "application/json"
+            "Accept"        = "application/json"
         }
 
         # NodePing API endpoint
         $nodeping_url = 'https://api.nodeping.com/api/1/checks'
     }
-    
+
     PROCESS {
         [array]$checkList = @()
         $fromjson = Invoke-RestMethod -UseBasicParsing -Uri $nodeping_url -Headers $req_header -Method Get -ContentType "application/json"
         if ($?) {
-            $fromjson.PSObject.Properties | % { $checkList += $_.value }
-        }  
+            $fromjson.PSObject.Properties | ForEach-Object { $checkList += $_.value }
+        }
     }
-    
+
     END {
         if ($checkList.Count -gt 0) {
             return $checkList
-        } else {
+        }
+        else {
             [array]$checkList = @()
             return $checkList
-        }   
+        }
     }
 }
 
 Function Get-NodePingCheck() {
-    Param(   
+    Param(
         [Parameter(Mandatory = $true)]
         [string]$token,
 
@@ -47,12 +48,12 @@ Function Get-NodePingCheck() {
 
     BEGIN {
         $mySecretToken = $token
-        
+
         # See https://github.com/PowerShell/PowerShell/issues/4274
-        $my_cred      = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($mySecretToken+':'+'mysecret'))
-        $req_header   = @{
+        $my_cred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($mySecretToken + ':' + 'mysecret'))
+        $req_header = @{
             "Authorization" = "Basic $my_cred"
-            "Accept" = "application/json"
+            "Accept"        = "application/json"
         }
 
         # NodePing API endpoint
@@ -62,7 +63,7 @@ Function Get-NodePingCheck() {
     PROCESS {
         $fromjson = Invoke-RestMethod -UseBasicParsing -Uri $nodeping_url -Headers $req_header -Method Get -ContentType "application/json"
     }
-    
+
     END {
         if ($?) {
             return $fromjson
@@ -71,7 +72,7 @@ Function Get-NodePingCheck() {
 }
 
 Function Enable-NodePingCheck() {
-    Param(   
+    Param(
         [Parameter(Mandatory = $true)]
         [string]$token,
 
@@ -81,12 +82,12 @@ Function Enable-NodePingCheck() {
 
     BEGIN {
         $mySecretToken = $token
-        
+
         # See https://github.com/PowerShell/PowerShell/issues/4274
-        $my_cred      = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($mySecretToken+':'+'mysecret'))
-        $req_header   = @{
+        $my_cred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($mySecretToken + ':' + 'mysecret'))
+        $req_header = @{
             "Authorization" = "Basic $my_cred"
-            "Accept" = "application/json"
+            "Accept"        = "application/json"
         }
 
 
@@ -97,21 +98,21 @@ Function Enable-NodePingCheck() {
     PROCESS {
         $fromjson = Invoke-RestMethod -UseBasicParsing -Uri $nodeping_url -Headers $req_header -ContentType "application/json" -Method Get
         $json_req = @{
-            type = $fromjson.type
-            enabled = "true"
+            type      = $fromjson.type
+            enabled   = "true"
             threshold = $fromjson.parameters.threshold
-            target = $fromjson.parameters.target
+            target    = $fromjson.parameters.target
         } | ConvertTo-Json -Compress
         $body = $json_req
-        
-        $res = Invoke-RestMethod -UseBasicParsing -Uri $nodeping_url -Headers $req_header -ContentType "application/json" -Method PUT -Body $body
+
+        Invoke-RestMethod -UseBasicParsing -Uri $nodeping_url -Headers $req_header -ContentType "application/json" -Method PUT -Body $body | Out-Null
     }
-    
-    END{}
+
+    END { }
 }
 
 Function Disable-NodePingCheck() {
-    Param(   
+    Param(
         [Parameter(Mandatory = $true)]
         [string]$token,
 
@@ -121,12 +122,12 @@ Function Disable-NodePingCheck() {
 
     BEGIN {
         $mySecretToken = $token
-        
+
         # See https://github.com/PowerShell/PowerShell/issues/4274
-        $my_cred      = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($mySecretToken+':'+'mysecret'))
-        $req_header   = @{
+        $my_cred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($mySecretToken + ':' + 'mysecret'))
+        $req_header = @{
             "Authorization" = "Basic $my_cred"
-            "Accept" = "application/json"
+            "Accept"        = "application/json"
         }
 
 
@@ -137,16 +138,46 @@ Function Disable-NodePingCheck() {
     PROCESS {
         $fromjson = Invoke-RestMethod -UseBasicParsing -Uri $nodeping_url -Headers $req_header -ContentType "application/json" -Method Get
         $json_req = @{
-            type = $fromjson.type
-            enabled = "false"
+            type      = $fromjson.type
+            enabled   = "false"
             threshold = $fromjson.parameters.threshold
-            target = $fromjson.parameters.target
+            target    = $fromjson.parameters.target
         } | ConvertTo-Json -Compress
         $body = $json_req
-        
-        $res = Invoke-RestMethod -UseBasicParsing -Uri $nodeping_url -Headers $req_header -ContentType "application/json" -Method PUT -Body $body
+
+        Invoke-RestMethod -UseBasicParsing -Uri $nodeping_url -Headers $req_header -ContentType "application/json" -Method PUT -Body $body | Out-Null
     }
-    
-    END{}
+
+    END { }
 }
 
+
+Function Remove-NodePingCheck() {
+    Param(
+        [Parameter(Mandatory = $true)]
+        [string]$token,
+
+        [Parameter(Mandatory = $true)]
+        [string]$checkId
+    )
+
+    BEGIN {
+        $mySecretToken = $token
+
+        # See https://github.com/PowerShell/PowerShell/issues/4274
+        $my_cred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($mySecretToken + ':' + 'mysecret'))
+        $req_header = @{
+            "Authorization" = "Basic $my_cred"
+            "Accept"        = "application/json"
+        }
+
+        # NodePing API endpoint
+        $nodeping_url = "https://api.nodeping.com/api/1/checks/$checkId"
+    }
+
+    PROCESS {
+        Invoke-RestMethod -UseBasicParsing -Uri $nodeping_url -Headers $req_header -ContentType "application/json" -Method DELETE | Out-Null
+    }
+
+    END { }
+}
