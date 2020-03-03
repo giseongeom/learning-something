@@ -21,9 +21,7 @@
     PROCESS {
         [array]$checkList = @()
         $fromjson = Invoke-RestMethod -UseBasicParsing -Uri $nodeping_url -Headers $req_header -Method Get -ContentType "application/json"
-        if ($?) {
-            $fromjson.PSObject.Properties | ForEach-Object { $checkList += $_.value }
-        }
+        $fromjson.PSObject.Properties | ForEach-Object { $checkList += $_.value }
     }
 
     END {
@@ -176,7 +174,55 @@ Function Remove-NodePingCheck() {
     }
 
     PROCESS {
-        Invoke-RestMethod -UseBasicParsing -Uri $nodeping_url -Headers $req_header -ContentType "application/json" -Method DELETE | Out-Null
+        Invoke-RestMethod -UseBasicParsing -Uri $nodeping_url -Headers $req_header -ContentType "application/json" -Method DELETE
+    }
+
+    END { }
+}
+
+Function Copy-NodePingCheck() {
+    Param(
+        [Parameter(Mandatory = $true)]
+        [string]$token,
+
+        [Parameter(Mandatory = $true)]
+        [string]$srcCheckId
+    )
+
+    BEGIN {
+        $checkId = $srcCheckId
+        $mySecretToken = $token
+
+        # See https://github.com/PowerShell/PowerShell/issues/4274
+        $my_cred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($mySecretToken + ':' + 'mysecret'))
+        $req_header = @{
+            "Authorization" = "Basic $my_cred"
+            "Accept"        = "application/json"
+        }
+
+        # NodePing API endpoint
+        $nodeping_url = "https://api.nodeping.com/api/1/checks/$checkId"
+        $nodeping_post_url = "https://api.nodeping.com/api/1/checks/"
+    }
+
+    PROCESS {
+        $srcCheck = Invoke-RestMethod -UseBasicParsing -Uri $nodeping_url -Headers $req_header -ContentType "application/json" -Method Get
+        $dstCheck = $srcCheck | Select-Object -Property * -ExcludeProperty _id,customer_id,uuid,created,modified,status,parameters,label
+
+        $srcCheck.parameters.psobject.Properties | ForEach-Object {
+            $_tmp_propertities = $_
+            $dstCheck | Add-Member -MemberType NoteProperty -TypeName string -Name $_tmp_propertities.name -Value $_tmp_propertities.value
+        }
+
+        $label_suffix = get-date -format FileDateTimeUniversal
+        $label_prefix = 'CLONE'
+        $label = $label_prefix + '-' + $srcCheck.label + '-' + $label_suffix
+        $dstCheck | Add-Member -MemberType NoteProperty -TypeName string -Name label -Value $label
+
+        $body = $dstCheck | ConvertTo-Json -Compress
+
+        $res = Invoke-RestMethod -UseBasicParsing -Uri $nodeping_post_url -Headers $req_header -ContentType "application/json" -Method POST -Body $body -ErrorAction SilentlyContinue
+        return $res
     }
 
     END { }
