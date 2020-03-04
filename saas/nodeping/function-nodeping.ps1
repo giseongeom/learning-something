@@ -37,6 +37,80 @@ Function Get-NodePingCheckList() {
     }
 }
 
+Function Get-NodePingContactList() {
+    Param(
+        [Parameter(Mandatory = $true)]
+        [string]$token
+    )
+
+    BEGIN {
+        $mySecretToken = $token
+
+        # See https://github.com/PowerShell/PowerShell/issues/4274
+        $my_cred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($mySecretToken + ':' + 'mysecret'))
+        $req_header = @{
+            "Authorization" = "Basic $my_cred"
+            "Accept"        = "application/json"
+        }
+
+        # NodePing API endpoint
+        $nodeping_url = 'https://api.nodeping.com/api/1/contacts?'
+    }
+
+    PROCESS {
+        [array]$contactList = @()
+        $fromjson = Invoke-RestMethod -UseBasicParsing -Uri $nodeping_url -Headers $req_header -Method Get -ContentType "application/json"
+        $fromjson.PSObject.Properties | ForEach-Object { $contactList += $_.value }
+    }
+
+    END {
+        if ($contactList.Count -gt 0) {
+            return $contactList
+        }
+        else {
+            [array]$contactList = @()
+            return $contactList
+        }
+    }
+}
+
+Function Get-NodePingScheduleList() {
+    Param(
+        [Parameter(Mandatory = $true)]
+        [string]$token
+    )
+
+    BEGIN {
+        $mySecretToken = $token
+
+        # See https://github.com/PowerShell/PowerShell/issues/4274
+        $my_cred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($mySecretToken + ':' + 'mysecret'))
+        $req_header = @{
+            "Authorization" = "Basic $my_cred"
+            "Accept"        = "application/json"
+        }
+
+        # NodePing API endpoint
+        $nodeping_url = 'https://api.nodeping.com/api/1/schedules/'
+    }
+
+    PROCESS {
+        $scheduleList = @{}
+        $fromjson = Invoke-RestMethod -UseBasicParsing -Uri $nodeping_url -Headers $req_header -Method Get -ContentType "application/json"
+        $fromjson.PSObject.Properties | ForEach-Object { $scheduleList.Add($_.name, $_.value) }
+    }
+
+    END {
+        if ($scheduleList.Count -gt 0) {
+            return $scheduleList
+        }
+        else {
+            [array]$scheduleList = @()
+            return $scheduleList
+        }
+    }
+}
+
 Function Get-NodePingCheck() {
     Param(
         [Parameter(Mandatory = $true)]
@@ -111,8 +185,8 @@ Function Enable-NodePingCheck() {
             enabled   = "true"
             threshold = $fromjson.parameters.threshold
             target    = $fromjson.parameters.target
-        } | ConvertTo-Json -Compress
-        $body = $json_req
+        }
+        $body = $json_req | ConvertTo-Json
 
         Invoke-RestMethod -UseBasicParsing -Uri $nodeping_url -Headers $req_header -ContentType "application/json" -Method PUT -Body $body | Out-Null
     }
@@ -151,8 +225,8 @@ Function Disable-NodePingCheck() {
             enabled   = "false"
             threshold = $fromjson.parameters.threshold
             target    = $fromjson.parameters.target
-        } | ConvertTo-Json -Compress
-        $body = $json_req
+        }
+        $body = $json_req | ConvertTo-Json
 
         Invoke-RestMethod -UseBasicParsing -Uri $nodeping_url -Headers $req_header -ContentType "application/json" -Method PUT -Body $body | Out-Null
     }
@@ -246,21 +320,31 @@ Function Copy-NodePingCheck() {
 
     PROCESS {
         if ($srcCheck) {
-            $dstCheck = $srcCheck | Select-Object -Property * -ExcludeProperty _id, customer_id, uuid, created, modified, status, parameters, label
+            $dstCheck = @{}
+            $srcCheck.psobject.properties | ForEach-Object { $dstCheck[$_.name] = $_.value }
+
+            $dstCheck.Remove('_id')
+            $dstCheck.Remove('customer_id')
+            $dstCheck.Remove('uuid')
+            $dstCheck.Remove('created')
+            $dstCheck.Remove('modified')
+            $dstCheck.Remove('status')
+            $dstCheck.Remove('parameters')
+            $dstCheck.Remove('label')
+            $dstCheck.Remove('customer_id')
         }
 
         $srcCheck.parameters.psobject.Properties | ForEach-Object {
             $_tmp_propertities = $_
-            $dstCheck | Add-Member -MemberType NoteProperty -TypeName string -Name $_tmp_propertities.name -Value $_tmp_propertities.value
+            $dstCheck.Add($_tmp_propertities.name, $_tmp_propertities.value)
         }
 
         $label_suffix = get-date -format FileDateTimeUniversal
         $label_prefix = 'CLONE'
         $label = $label_prefix + '-' + $srcCheck.label + '-' + $label_suffix
-        $dstCheck | Add-Member -MemberType NoteProperty -TypeName string -Name label -Value $label
-
-        $body = $dstCheck | ConvertTo-Json -Compress
-        $res = Invoke-RestMethod -UseBasicParsing -Uri $nodeping_post_url -Headers $req_header -ContentType "application/json" -Method POST -Body $body -ErrorAction SilentlyContinue
+        $dstCheck.Add("label", $label)
+        $body = $dstCheck | ConvertTo-Json
+        $res = Invoke-RestMethod -UseBasicParsing -Uri $nodeping_post_url -Headers $req_header -ContentType "application/json" -Method POST -Body $body
         return $res
     }
 
@@ -279,7 +363,7 @@ Function Set-NodePingCheck() {
         [Parameter(Mandatory = $false)]
         [string]$label,
 
-        [ValidateSet("North America", "Europe", "East Asia/Oceania", "World Wide")]
+        [ValidateSet("North America", "Europe", "East Asia/Oceania", "World Wide", "Default")]
         [string]$region,
 
         [ValidateSet("Very High", "High", "Medium", "Low", "Very Low")]
@@ -320,7 +404,6 @@ Function Set-NodePingCheck() {
             "Accept"        = "application/json"
         }
 
-
         # NodePing API endpoint
         $nodeping_url = "https://api.nodeping.com/api/1/checks/$checkId"
     }
@@ -356,6 +439,7 @@ Function Set-NodePingCheck() {
                 'Europe' { $json_req.Add("runlocations", 'eur') }
                 'East Asia/Oceania' { $json_req.Add("runlocations", 'eao') }
                 'World Wide' { $json_req.Add("runlocations", 'wlw') }
+                'Default' { $json_req.Add("runlocations", '') }
             }
         }
 
@@ -380,10 +464,103 @@ Function Set-NodePingCheck() {
         }
 
         $body = $json_req | ConvertTo-Json -Compress
-        $body # debug
         $res = Invoke-RestMethod -UseBasicParsing -Uri $nodeping_url -Headers $req_header -ContentType "application/json" -Method PUT -Body $body
         return $res
     }
 
     END {}
 }
+
+Function Get-NodePingNotification() {
+    Param(
+        [Parameter(Mandatory = $true)]
+        [string]$token,
+
+        [Parameter(ParameterSetName = 'byId')]
+        [string]$checkId,
+
+        [Parameter(ParameterSetName = 'byLabel')]
+        [string]$checkLabel
+    )
+
+    BEGIN {
+        $mySecretToken = $token
+        if ($PSBoundParameters.ContainsKey('checkId')) {
+            $nodeping_url = "https://api.nodeping.com/api/1/notifications/$checkId"
+        }
+
+        # See https://github.com/PowerShell/PowerShell/issues/4274
+        $my_cred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($mySecretToken + ':' + 'mysecret'))
+        $req_header = @{
+            "Authorization" = "Basic $my_cred"
+            "Accept"        = "application/json"
+        }
+
+        if ($PSBoundParameters.ContainsKey('checkLabel')) {
+            $myList = Get-NodePingCheckList -token $mySecretToken
+            $myCheck = $myList | Where-Object { $_.label -eq $checkLabel } | Select-Object -First 1
+            if ($myCheck) {
+                $myCheckId = $myCheck._id
+                $nodeping_url = "https://api.nodeping.com/api/1/notifications/$myCheckId"
+            }
+        }
+    }
+
+    PROCESS {
+        $res = Invoke-RestMethod -UseBasicParsing -Uri $nodeping_url -Headers $req_header -Method Get -ContentType "application/json"
+        return $res
+    }
+
+    END {}
+}
+
+
+Function Get-NodePingCheckResult() {
+    Param(
+        [Parameter(Mandatory = $true)]
+        [string]$token,
+
+        [Parameter(ParameterSetName = 'byId')]
+        [string]$checkId,
+
+        [Parameter(ParameterSetName = 'byLabel')]
+        [string]$checkLabel
+    )
+
+    BEGIN {
+        $mySecretToken = $token
+        if ($PSBoundParameters.ContainsKey('checkId')) {
+            $nodeping_url = "https://api.nodeping.com/api/1/results/$checkId"
+        }
+
+        # See https://github.com/PowerShell/PowerShell/issues/4274
+        $my_cred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($mySecretToken + ':' + 'mysecret'))
+        $req_header = @{
+            "Authorization" = "Basic $my_cred"
+            "Accept"        = "application/json"
+        }
+
+        if ($PSBoundParameters.ContainsKey('checkLabel')) {
+            $myList = Get-NodePingCheckList -token $mySecretToken
+            $myCheck = $myList | Where-Object { $_.label -eq $checkLabel } | Select-Object -First 1
+            if ($myCheck) {
+                $myCheckId = $myCheck._id
+                $nodeping_url = "https://api.nodeping.com/api/1/results/$myCheckId"
+            }
+        }
+
+        $body = @{
+            limit = 5
+            clean = 1
+        }
+    }
+
+    PROCESS {
+        $res = Invoke-RestMethod -UseBasicParsing -Uri $nodeping_url -Headers $req_header -body $body -Method Get -ContentType "application/json"
+        return $res
+    }
+
+    END {}
+}
+
+
