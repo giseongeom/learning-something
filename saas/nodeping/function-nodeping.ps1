@@ -2,12 +2,21 @@
 
 Function Get-NodePingCheckList() {
     Param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [string]$token
     )
 
     BEGIN {
-        $mySecretToken = $token
+        if ($PSBoundParameters.ContainsKey('token')) {
+            [string]$mySecretToken = $token
+        }
+        elseif ($env:nodeping_token) {
+            [string]$mySecretToken = $env:nodeping_token
+        }
+        else {
+            Write-Host "nodeping_token not found. Exiting..."
+            Break
+        }
 
         # See https://github.com/PowerShell/PowerShell/issues/4274
         $my_cred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($mySecretToken + ':' + 'mysecret'))
@@ -39,12 +48,21 @@ Function Get-NodePingCheckList() {
 
 Function Get-NodePingContactList() {
     Param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [string]$token
     )
 
     BEGIN {
-        $mySecretToken = $token
+        if ($PSBoundParameters.ContainsKey('token')) {
+            [string]$mySecretToken = $token
+        }
+        elseif ($env:nodeping_token) {
+            [string]$mySecretToken = $env:nodeping_token
+        }
+        else {
+            Write-Host "nodeping_token not found. Exiting..."
+            Break
+        }
 
         # See https://github.com/PowerShell/PowerShell/issues/4274
         $my_cred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($mySecretToken + ':' + 'mysecret'))
@@ -76,12 +94,21 @@ Function Get-NodePingContactList() {
 
 Function Get-NodePingScheduleList() {
     Param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [string]$token
     )
 
     BEGIN {
-        $mySecretToken = $token
+        if ($PSBoundParameters.ContainsKey('token')) {
+            [string]$mySecretToken = $token
+        }
+        elseif ($env:nodeping_token) {
+            [string]$mySecretToken = $env:nodeping_token
+        }
+        else {
+            Write-Host "nodeping_token not found. Exiting..."
+            Break
+        }
 
         # See https://github.com/PowerShell/PowerShell/issues/4274
         $my_cred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($mySecretToken + ':' + 'mysecret'))
@@ -95,7 +122,7 @@ Function Get-NodePingScheduleList() {
     }
 
     PROCESS {
-        $scheduleList = @{}
+        $scheduleList = @{ }
         $fromjson = Invoke-RestMethod -UseBasicParsing -Uri $nodeping_url -Headers $req_header -Method Get -ContentType "application/json"
         $fromjson.PSObject.Properties | ForEach-Object { $scheduleList.Add($_.name, $_.value) }
     }
@@ -113,7 +140,7 @@ Function Get-NodePingScheduleList() {
 
 Function Get-NodePingCheck() {
     Param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [string]$token,
 
         [Parameter(ParameterSetName = 'byId')]
@@ -124,7 +151,17 @@ Function Get-NodePingCheck() {
     )
 
     BEGIN {
-        $mySecretToken = $token
+        if ($PSBoundParameters.ContainsKey('token')) {
+            [string]$mySecretToken = $token
+        }
+        elseif ($env:nodeping_token) {
+            [string]$mySecretToken = $env:nodeping_token
+        }
+        else {
+            Write-Host "nodeping_token not found. Exiting..."
+            Break
+        }
+
         if ($PSBoundParameters.ContainsKey('checkId')) {
             $nodeping_url = "https://api.nodeping.com/api/1/checks/$checkId"
         }
@@ -151,12 +188,12 @@ Function Get-NodePingCheck() {
         return $fromjson
     }
 
-    END {}
+    END { }
 }
 
 Function Enable-NodePingCheck() {
     Param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [string]$token,
 
         [Parameter(Mandatory = $true)]
@@ -164,7 +201,16 @@ Function Enable-NodePingCheck() {
     )
 
     BEGIN {
-        $mySecretToken = $token
+        if ($PSBoundParameters.ContainsKey('token')) {
+            [string]$mySecretToken = $token
+        }
+        elseif ($env:nodeping_token) {
+            [string]$mySecretToken = $env:nodeping_token
+        }
+        else {
+            Write-Host "nodeping_token not found. Exiting..."
+            Break
+        }
 
         # See https://github.com/PowerShell/PowerShell/issues/4274
         $my_cred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($mySecretToken + ':' + 'mysecret'))
@@ -191,12 +237,12 @@ Function Enable-NodePingCheck() {
         Invoke-RestMethod -UseBasicParsing -Uri $nodeping_url -Headers $req_header -ContentType "application/json" -Method PUT -Body $body | Out-Null
     }
 
-    END {}
+    END { }
 }
 
 Function Disable-NodePingCheck() {
     Param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [string]$token,
 
         [Parameter(Mandatory = $true)]
@@ -204,7 +250,16 @@ Function Disable-NodePingCheck() {
     )
 
     BEGIN {
-        $mySecretToken = $token
+        if ($PSBoundParameters.ContainsKey('token')) {
+            [string]$mySecretToken = $token
+        }
+        elseif ($env:nodeping_token) {
+            [string]$mySecretToken = $env:nodeping_token
+        }
+        else {
+            Write-Host "nodeping_token not found. Exiting..."
+            Break
+        }
 
         # See https://github.com/PowerShell/PowerShell/issues/4274
         $my_cred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($mySecretToken + ':' + 'mysecret'))
@@ -231,12 +286,12 @@ Function Disable-NodePingCheck() {
         Invoke-RestMethod -UseBasicParsing -Uri $nodeping_url -Headers $req_header -ContentType "application/json" -Method PUT -Body $body | Out-Null
     }
 
-    END {}
+    END { }
 }
 
 Function Remove-NodePingCheck() {
     Param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [string]$token,
 
         [Parameter(ParameterSetName = 'byId')]
@@ -247,7 +302,17 @@ Function Remove-NodePingCheck() {
     )
 
     BEGIN {
-        $mySecretToken = $token
+        if ($PSBoundParameters.ContainsKey('token')) {
+            [string]$mySecretToken = $token
+        }
+        elseif ($env:nodeping_token) {
+            [string]$mySecretToken = $env:nodeping_token
+        }
+        else {
+            Write-Host "nodeping_token not found. Exiting..."
+            Break
+        }
+
         if ($PSBoundParameters.ContainsKey('checkId')) {
             # NodePing API endpoint
             $nodeping_url = "https://api.nodeping.com/api/1/checks/$checkId"
@@ -273,12 +338,12 @@ Function Remove-NodePingCheck() {
         Invoke-RestMethod -UseBasicParsing -Uri $nodeping_url -Headers $req_header -ContentType "application/json" -Method DELETE
     }
 
-    END {}
+    END { }
 }
 
 Function Copy-NodePingCheck() {
     Param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [string]$token,
 
         [Parameter(ParameterSetName = 'byId')]
@@ -289,7 +354,16 @@ Function Copy-NodePingCheck() {
     )
 
     BEGIN {
-        $mySecretToken = $token
+        if ($PSBoundParameters.ContainsKey('token')) {
+            [string]$mySecretToken = $token
+        }
+        elseif ($env:nodeping_token) {
+            [string]$mySecretToken = $env:nodeping_token
+        }
+        else {
+            Write-Host "nodeping_token not found. Exiting..."
+            Break
+        }
 
         # See https://github.com/PowerShell/PowerShell/issues/4274
         $my_cred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($mySecretToken + ':' + 'mysecret'))
@@ -320,7 +394,7 @@ Function Copy-NodePingCheck() {
 
     PROCESS {
         if ($srcCheck) {
-            $dstCheck = @{}
+            $dstCheck = @{ }
             $srcCheck.psobject.properties | ForEach-Object { $dstCheck[$_.name] = $_.value }
 
             $dstCheck.Remove('_id')
@@ -348,13 +422,13 @@ Function Copy-NodePingCheck() {
         return $res
     }
 
-    END {}
+    END { }
 }
 
 Function Set-NodePingCheck() {
     [CmdletBinding(DefaultParameterSetName = 'Main')]
     Param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [string]$token,
 
         [Parameter(Mandatory = $true)]
@@ -395,7 +469,16 @@ Function Set-NodePingCheck() {
     )
 
     BEGIN {
-        $mySecretToken = $token
+        if ($PSBoundParameters.ContainsKey('token')) {
+            [string]$mySecretToken = $token
+        }
+        elseif ($env:nodeping_token) {
+            [string]$mySecretToken = $env:nodeping_token
+        }
+        else {
+            Write-Host "nodeping_token not found. Exiting..."
+            Break
+        }
 
         # See https://github.com/PowerShell/PowerShell/issues/4274
         $my_cred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($mySecretToken + ':' + 'mysecret'))
@@ -468,12 +551,12 @@ Function Set-NodePingCheck() {
         return $res
     }
 
-    END {}
+    END { }
 }
 
 Function Get-NodePingNotification() {
     Param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [string]$token,
 
         [Parameter(ParameterSetName = 'byId')]
@@ -484,7 +567,17 @@ Function Get-NodePingNotification() {
     )
 
     BEGIN {
-        $mySecretToken = $token
+        if ($PSBoundParameters.ContainsKey('token')) {
+            [string]$mySecretToken = $token
+        }
+        elseif ($env:nodeping_token) {
+            [string]$mySecretToken = $env:nodeping_token
+        }
+        else {
+            Write-Host "nodeping_token not found. Exiting..."
+            Break
+        }
+
         if ($PSBoundParameters.ContainsKey('checkId')) {
             $nodeping_url = "https://api.nodeping.com/api/1/notifications/$checkId"
         }
@@ -511,13 +604,13 @@ Function Get-NodePingNotification() {
         return $res
     }
 
-    END {}
+    END { }
 }
 
 
 Function Get-NodePingCheckResult() {
     Param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [string]$token,
 
         [Parameter(ParameterSetName = 'byId')]
@@ -528,7 +621,17 @@ Function Get-NodePingCheckResult() {
     )
 
     BEGIN {
-        $mySecretToken = $token
+        if ($PSBoundParameters.ContainsKey('token')) {
+            [string]$mySecretToken = $token
+        }
+        elseif ($env:nodeping_token) {
+            [string]$mySecretToken = $env:nodeping_token
+        }
+        else {
+            Write-Host "nodeping_token not found. Exiting..."
+            Break
+        }
+
         if ($PSBoundParameters.ContainsKey('checkId')) {
             $nodeping_url = "https://api.nodeping.com/api/1/results/$checkId"
         }
@@ -560,7 +663,7 @@ Function Get-NodePingCheckResult() {
         return $res
     }
 
-    END {}
+    END { }
 }
 
 
