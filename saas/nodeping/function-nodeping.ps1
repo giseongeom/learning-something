@@ -14,7 +14,7 @@ Function Get-NodePingCheckList() {
             [string]$mySecretToken = $env:nodeping_token
         }
         else {
-            Write-Host "nodeping_token not found. Exiting..."
+            Write-Host 'nodeping_token not found. Set token info at $env:nodeping_token or use $token parameter. Exiting...'
             Break
         }
 
@@ -60,7 +60,7 @@ Function Get-NodePingContactList() {
             [string]$mySecretToken = $env:nodeping_token
         }
         else {
-            Write-Host "nodeping_token not found. Exiting..."
+            Write-Host 'nodeping_token not found. Set token info at $env:nodeping_token or use $token parameter. Exiting...'
             Break
         }
 
@@ -106,7 +106,7 @@ Function Get-NodePingScheduleList() {
             [string]$mySecretToken = $env:nodeping_token
         }
         else {
-            Write-Host "nodeping_token not found. Exiting..."
+            Write-Host 'nodeping_token not found. Set token info at $env:nodeping_token or use $token parameter. Exiting...'
             Break
         }
 
@@ -158,7 +158,7 @@ Function Get-NodePingCheck() {
             [string]$mySecretToken = $env:nodeping_token
         }
         else {
-            Write-Host "nodeping_token not found. Exiting..."
+            Write-Host 'nodeping_token not found. Set token info at $env:nodeping_token or use $token parameter. Exiting...'
             Break
         }
 
@@ -208,7 +208,7 @@ Function Enable-NodePingCheck() {
             [string]$mySecretToken = $env:nodeping_token
         }
         else {
-            Write-Host "nodeping_token not found. Exiting..."
+            Write-Host 'nodeping_token not found. Set token info at $env:nodeping_token or use $token parameter. Exiting...'
             Break
         }
 
@@ -257,7 +257,7 @@ Function Disable-NodePingCheck() {
             [string]$mySecretToken = $env:nodeping_token
         }
         else {
-            Write-Host "nodeping_token not found. Exiting..."
+            Write-Host 'nodeping_token not found. Set token info at $env:nodeping_token or use $token parameter. Exiting...'
             Break
         }
 
@@ -309,7 +309,7 @@ Function Remove-NodePingCheck() {
             [string]$mySecretToken = $env:nodeping_token
         }
         else {
-            Write-Host "nodeping_token not found. Exiting..."
+            Write-Host 'nodeping_token not found. Set token info at $env:nodeping_token or use $token parameter. Exiting...'
             Break
         }
 
@@ -361,7 +361,7 @@ Function Copy-NodePingCheck() {
             [string]$mySecretToken = $env:nodeping_token
         }
         else {
-            Write-Host "nodeping_token not found. Exiting..."
+            Write-Host 'nodeping_token not found. Set token info at $env:nodeping_token or use $token parameter. Exiting...'
             Break
         }
 
@@ -476,7 +476,7 @@ Function Set-NodePingCheck() {
             [string]$mySecretToken = $env:nodeping_token
         }
         else {
-            Write-Host "nodeping_token not found. Exiting..."
+            Write-Host 'nodeping_token not found. Set token info at $env:nodeping_token or use $token parameter. Exiting...'
             Break
         }
 
@@ -574,7 +574,7 @@ Function Get-NodePingNotification() {
             [string]$mySecretToken = $env:nodeping_token
         }
         else {
-            Write-Host "nodeping_token not found. Exiting..."
+            Write-Host 'nodeping_token not found. Set token info at $env:nodeping_token or use $token parameter. Exiting...'
             Break
         }
 
@@ -628,7 +628,7 @@ Function Get-NodePingCheckResult() {
             [string]$mySecretToken = $env:nodeping_token
         }
         else {
-            Write-Host "nodeping_token not found. Exiting..."
+            Write-Host 'nodeping_token not found. Set token info at $env:nodeping_token or use $token parameter. Exiting...'
             Break
         }
 
