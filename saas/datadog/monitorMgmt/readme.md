@@ -10,9 +10,6 @@ Datadog Monitor Management
   * Get-DDMontior
   * Remove-DDRcpt
     * Parameter(s)
-      - `collectorId` (Required)
-  * Remove-DDRcpt
-    * Parameter(s)
       - `monitor` (Required)
       - `target_rcpt` (Required)
 
