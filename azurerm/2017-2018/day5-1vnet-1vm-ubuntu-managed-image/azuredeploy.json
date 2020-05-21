@@ -1,5 +1,5 @@
 {
-  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "vnetName": {
@@ -109,7 +109,7 @@
   "variables": {
     "location": "[resourceGroup().location]",
     "nsg1Name": "AllowSSH",
-    "officeIPCidr": "210.216.0.0/16",
+    "officeIPCidr": "103.114.0.0/16",
     "homeIPCidr": "1.228.0.0/16",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('vnetName'))]",
     "subnet1Ref": "[concat(variables('vnetID'),'/subnets/',parameters('subnet1Name'))]"

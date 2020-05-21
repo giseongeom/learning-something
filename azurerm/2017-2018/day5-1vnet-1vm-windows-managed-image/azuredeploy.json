@@ -12,7 +12,7 @@
     },
     "enabledXN": {
       "type": "bool",
-      "defaultValue": false
+      "defaultValue": true
     },
     "adminUsername": {
       "type": "string",
