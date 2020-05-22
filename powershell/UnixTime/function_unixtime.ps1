@@ -1,15 +1,40 @@
 # https://stackoverflow.com/questions/10781697/convert-unix-time-with-powershell
 # https://stackoverflow.com/questions/23062515/do-unix-timestamps-change-across-timezones
-Function ConvertFrom-UnixTimeMillisecond {
+
+Function ConvertFrom-UnixTime {
     [cmdletbinding()]
-    [OutputType([double])]
+    [OutputType([datetime])]
     Param(
         [parameter(ValueFromPipeline)]
-        [int64]$Date
+        [int64]$unixtime
     )
     Process {
-        [datetime]$origin = '1970-01-01 00:00:00'
-        $origin.AddMilliseconds($Date)
+        [datetime]$origin = (Get-Date -Date '01/01/1970 00:00:00Z')
+        $origin.AddSeconds($unixtime).ToLocalTime()
+    }
+}
+
+Function ConvertFrom-UnixTimeMillisecond {
+    [cmdletbinding()]
+    [OutputType([datetime])]
+    Param(
+        [parameter(ValueFromPipeline)]
+        $unixtime
+    )
+    Process {
+        [datetime]$origin = (Get-Date -Date '01/01/1970 00:00:00Z')
+        $origin.AddMilliseconds($unixtime).ToLocalTime()
+    }
+}
+
+Function ConvertTo-UnixTime {
+    [cmdletbinding()]
+    Param(
+        [parameter(ValueFromPipeline)]
+        $Date
+    )
+    Process {
+        [int](New-TimeSpan -Start (Get-Date -Date '01/01/1970') -End ($Date).ToUniversalTime()).TotalSeconds
     }
 }
 
@@ -40,9 +65,10 @@ Function ConvertTo-UnixTimeMillisecond {
         $Date
     )
     Process {
-        (New-TimeSpan -Start (Get-Date -Date '01/01/1970') -End $Date).TotalMilliseconds
+        (New-TimeSpan -Start (Get-Date -Date '01/01/1970') -End $Date.ToUniversalTime()).TotalMilliseconds
     }
 }
+
 
 # https://www.powershellgallery.com/packages/Influx/1.0.98
 Function ConvertTo-UnixTimeNanosecond {
@@ -74,4 +100,3 @@ Function ConvertTo-UnixTimeNanosecond {
         [long]((New-TimeSpan -Start (Get-Date -Date '1970-01-01') -End (($Date).ToUniversalTime())).TotalSeconds * 1E9)
     }
 }
-
