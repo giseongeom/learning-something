@@ -1,0 +1,8 @@
+giseong-dev
+
+[all:vars]
+ansible_shell_type=powershell
+ansible_connection=ssh
+ansible_ssh_private_key_file="~/.ssh/id_rsa_giseongeom_BLUEHOLE"
+ansible_user=giseong.eom
+remote_tmp=C:\Users\giseong.eom\AppData\Local\Temp\
