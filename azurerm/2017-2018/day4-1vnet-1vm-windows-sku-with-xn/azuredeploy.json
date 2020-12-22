@@ -8,7 +8,15 @@
     },
     "vmSize": {
       "type": "string",
-      "defaultValue": "Standard_D8s_v3"
+      "defaultValue": "Standard_D8s_v3",
+      "allowedValues": [
+        "Standard_D4s_v3",
+        "Standard_D8s_v3",
+        "Standard_D16s_v3",
+        "Standard_D4s_v4",
+        "Standard_D8s_v4",
+        "Standard_D16s_v4"
+      ]
     },
     "enabledXN": {
       "type": "bool",
@@ -255,7 +263,7 @@
           },
           "osDisk": {
             "createOption": "FromImage",
-            "diskSizeGB": 256
+            "diskSizeGB": 512
           }
         },
         "networkProfile": {
