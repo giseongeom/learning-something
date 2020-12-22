@@ -1,5 +1,5 @@
 {
-  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "vmName": {
@@ -22,8 +22,13 @@
       "type": "string",
       "defaultvalue": "Pa$$w0rd1234!"
     },
+    "isDngVM": {
+      "type": "bool",
+      "defaultValue": false
+    },
     "osImageId": {
-      "type": "string"
+      "type": "string",
+      "defaultvalue": "TBD"
     }
   },
   "variables": {
@@ -39,13 +44,12 @@
     "publicIPAddressName": "[concat('pip', '-', parameters('vmName'), '-', take(uniqueString(parameters('vmName')), 4))]",
     "nicName": "[concat('nic', '-', parameters('vmName'), '-', take(uniqueString(parameters('vmName')), 4))]",
     "location": "[resourceGroup().location]",
-    "imagePublisher": "MicrosoftWindowsServer",
-    "imageOffer": "WindowsServer",
     "nsg1Name": "AllowRDP",
     "officeIPCidr": "103.114.0.0/16",
     "homeIPCidr": "1.228.0.0/16",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('vnetName'))]",
-    "subnet1Ref": "[concat(variables('vnetID'),'/subnets/',variables('subnet1Name'))]"
+    "subnet1Ref": "[concat(variables('vnetID'),'/subnets/',variables('subnet1Name'))]",
+    "isDngVmTag": "[if(parameters('isDngVM'), 'true', 'false')]"
   },
   "resources": [
     {
@@ -166,6 +170,10 @@
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[parameters('vmName')]",
       "location": "[variables('location')]",
+      "tags": {
+        "dedicated_node_group": "[variables('isDngVmTag')]",
+        "Product": "CMW-LAB"
+      },
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]",
         "[resourceId('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
