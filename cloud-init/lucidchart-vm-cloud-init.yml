@@ -1,0 +1,58 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+users:
+  - default
+packages:
+write_files:
+# Enable rc.local
+  - path: /etc/rc.local
+    owner: root:root
+    permissions: '0755'
+    content: |
+      #!/bin/bash -eux
+      #
+      # /etc/rc.local
+      #
+      #
+      #
+      #
+      exit 0
+runcmd:
+  # enable rc.local
+  - sed -i -e '$ a\\n\[Install]\nWantedBy=multi-user.target' /lib/systemd/system/rc-local.service
+  - systemctl enable rc-local.service
+  - systemctl start rc-local.service
+  #
+  #
+  # install pip3
+  - apt-get install -y --no-install-recommends software-properties-common
+  - apt-get install -y python3-pip
+  #
+  #
+  # install Azure CLI
+  - curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+  #
+  #
+  # install Powershell
+  - apt-get install -y wget apt-transport-https software-properties-common
+  - wget -q -O /tmp/packages-microsoft-prod.deb https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb
+  - dpkg -i /tmp/packages-microsoft-prod.deb
+  - apt-get update
+  - add-apt-repository -y universe
+  - apt-get install -y powershell
+  #
+  #
+  # install miscellaneous packages
+  - apt-get install -y git htop jq vim-nox build-essential
+  #
+  #
+  # Change max openfiles limit to 1M
+  - /bin/bash -c 'echo -e "\n# Increase max number of openfiles to 1M" >> /etc/security/limits.conf'
+  - /bin/bash -c 'echo -e "*     soft  nofile  1048576" >> /etc/security/limits.conf'
+  - /bin/bash -c 'echo -e "*     hard  nofile  1048576" >> /etc/security/limits.conf'
+  - /bin/bash -c 'echo -e "root  soft  nofile  1048576" >> /etc/security/limits.conf'
+  - /bin/bash -c 'echo -e "root  hard  nofile  1048576" >> /etc/security/limits.conf'
+  #
+  #
+  # do something...
