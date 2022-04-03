@@ -51,7 +51,11 @@ $ kubectl config use-context gke_serviceinfratest_asia-northeast3-a_demo-gke-gcg
 $ kubectl get svc -n agones-system
 $ EIP=$(kubectl get svc agones-allocator -n agones-system -o json | jq -r '.status.loadBalancer.ingress[0].ip')
 $ echo $EIP
-$ helm upgrade my-release --install --set agones.allocator.http.loadBalancerIP=$EIP --set agones.allocator.service.loadBalancerIP=$EIP --namespace agones-system --create-namespace agones/agones
+$ helm upgrade my-release --install \
+  --set agones.allocator.http.loadBalancerIP=$EIP \
+  --set agones.allocator.service.loadBalancerIP=$EIP \
+  --namespace agones-system \
+  --create-namespace agones/agones
 ```
 
 ## Allocator service / 2nd gke
@@ -60,7 +64,11 @@ $ kubectl config use-context gke_serviceinfratest_asia-northeast3-a_demo-gke-gcg
 $ kubectl get svc -n agones-system
 $ EIP=$(kubectl get svc agones-allocator -n agones-system -o json | jq -r '.status.loadBalancer.ingress[0].ip')
 $ echo $EIP
-$ helm upgrade my-release --install --set agones.allocator.http.loadBalancerIP=$EIP --set agones.allocator.service.loadBalancerIP=$EIP --namespace agones-system --create-namespace agones/agones
+$ helm upgrade my-release --install \
+  --set agones.allocator.http.loadBalancerIP=$EIP \
+  --set agones.allocator.service.loadBalancerIP=$EIP \
+  --namespace agones-system \
+  --create-namespace agones/agones
 ```
 
 # Citadel 설치
