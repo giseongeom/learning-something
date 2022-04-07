@@ -13,8 +13,8 @@ Vagrant.configure("2") do |config|
 
   # customization
   # https://stackoverflow.com/questions/17845637/how-to-change-vagrant-default-machine-name
-  config.vm.define     "dockerhost"
-  config.vm.hostname = "dockerhost"
+  config.vm.define     "minikube"
+  config.vm.hostname = "minikube"
 
   # https://www.vagrantup.com/docs/vagrantfile/ssh_settings#config-ssh-insert_key
   config.ssh.insert_key  = false
@@ -44,7 +44,7 @@ Vagrant.configure("2") do |config|
   # https://www.vagrantup.com/docs/networking/private_network
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
-  config.vm.network "private_network", ip: "192.168.1.10" # VMware Network Adapter VMnet1
+  config.vm.network "private_network", ip: "192.168.1.12" # VMware Network Adapter VMnet1
 
   # config.vm.network "public_network"
   # Create a public network, which generally matched to bridged network.
@@ -70,10 +70,13 @@ Vagrant.configure("2") do |config|
     v.vmx["ulm.disableMitigations"] = "TRUE" # https://kb.vmware.com/s/article/79832
   end
 
+  config.vm.provision "shell", path: "../vagrant-scripts/enable-root-user-at-ubuntu.sh"
   config.vm.provision "shell", path: "../vagrant-scripts/update-ubuntu-apt-source-list.sh"
   config.vm.provision "shell", path: "../vagrant-scripts/install-ubuntu-packages.sh"
   config.vm.provision "shell", path: "../vagrant-scripts/install-docker.sh"
   config.vm.provision "shell", path: "../vagrant-scripts/install-kubectl.sh"
+  config.vm.provision "shell", path: "install-minikube-cli.sh"
+  config.vm.provision "shell", path: "install-minikube.sh", reset: true
 
   # for ansible_local provisioner
   # config.vm.provision "shell", path: "install-ansible.sh"

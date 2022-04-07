@@ -6,8 +6,7 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
-# Ubuntu packages
-export DEBIAN_FRONTEND=noninteractive
-apt update \
-    && apt upgrade -y
-
+# minikube
+export MINIKUBE_IN_STYLE=0
+sudo -u vagrant minikube start --driver docker --cpus 4 --memory 4g --wait=all --v=0  > /dev/null 2>&1
+sudo -u vagrant minikube kubectl cluster-info

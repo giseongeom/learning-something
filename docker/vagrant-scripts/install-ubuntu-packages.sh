@@ -12,4 +12,5 @@ apt-get update \
     && apt-get -y install --no-install-recommends apt-utils dialog 2>&1
 
 apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends build-essential curl jq git htop net-tools time p7zip-full unzip ca-certificates
+    && apt-get -y install --no-install-recommends curl jq net-tools ca-certificates
+    #&& apt-get -y install --no-install-recommends git build-essential htop time p7zip-full unzip
